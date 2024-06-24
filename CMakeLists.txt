@@ -13,6 +13,7 @@ add_executable(${PROJECT_NAME} main.cpp
         SpaceComponents.h
         LifeComponents.h
         DamageSystem.cpp
-        DamageSystem.h)
+        DamageSystem.h
+        game.h game.cpp)
 
 target_link_libraries(${PROJECT_NAME} raylib EnTT::EnTT "-static-libgcc -static-libstdc++")

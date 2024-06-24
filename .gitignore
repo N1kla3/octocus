@@ -2,3 +2,5 @@
 /.idea/
 /DebugBuild/
 /RelBuild/
+compile_commands.json
+/.cache/
