@@ -1,6 +1,6 @@
 #include "game.h"
 #include "raylib.h"
-#include "SpaceComponents.h"
+#include "components/SpaceComponents.h"
 #include <chrono>
 
 void Game::init()
@@ -13,10 +13,16 @@ void Game::init()
 void Game::run()
 {
     using namespace std::chrono;
+    auto begin = steady_clock::now();
 
     while (!WindowShouldClose())
     {
-        update(0.f);
+        const auto current = steady_clock::now();
+        float duration = std::chrono::duration<float>{current - begin}.count();
+
+        update(duration);
+
+        begin = current;
     }
 
     tearDown();
