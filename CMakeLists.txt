@@ -27,6 +27,8 @@ add_executable(${PROJECT_NAME} main.cpp
         systems/MovementSystem.cpp
         systems/AttackSystem.h
         systems/AttackSystem.cpp
+        systems/CollisionSystem.h
+        systems/CollisionSystem.cpp
         game.h game.cpp)
 
 target_link_libraries(${PROJECT_NAME} raylib EnTT::EnTT "-static-libgcc -static-libstdc++")

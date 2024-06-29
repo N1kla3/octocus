@@ -4,5 +4,5 @@
 class DamageSystem 
 {
 public:
-    static void UpdateDamage(entt::registry& registry);
+    static void updateDamage(entt::registry& registry);
 };

@@ -1,7 +1,10 @@
 #include "game.h"
+#include "CollisionSystem.h"
 #include "raylib.h"
 #include "SpaceComponents.h"
 #include "RenderComponent.h"
+#include "DamageSystem.h"
+#include "AttackSystem.h"
 #include "DrawSystem.h"
 #include "MovementSystem.h"
 #include "InputSystem.h"
@@ -52,6 +55,9 @@ void Game::updateGameplay(float delta)
 {
     InputSystem::update(m_Registry, delta);
     MovementSystem::update(m_Registry, delta);
+    CollisionSystem::update(m_Registry);
+    AttackSystem::update(m_Registry);
+    DamageSystem::updateDamage(m_Registry);
     return;
     auto view = m_Registry.view<const position, velocity>();
 
