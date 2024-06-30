@@ -4,6 +4,7 @@
 #include "SpaceComponents.h"
 #include "RenderComponent.h"
 #include "DamageSystem.h"
+#include "KillSystem.h"
 #include "AttackSystem.h"
 #include "DrawSystem.h"
 #include "MovementSystem.h"
@@ -58,6 +59,7 @@ void Game::updateGameplay(float delta)
     CollisionSystem::update(m_Registry);
     AttackSystem::update(m_Registry);
     DamageSystem::updateDamage(m_Registry);
+    KillSystem::update(m_Registry);
     return;
     auto view = m_Registry.view<const position, velocity>();
 
