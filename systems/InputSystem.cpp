@@ -8,10 +8,23 @@ void InputSystem::update(entt::registry& registry, float delta)
 
     view.each([](velocity& vel) 
     {
-        if (IsKeyPressed(KEY_W))
+        vel.dx = 0;
+        vel.dy = 0;
+        if (IsKeyDown(KEY_W))
         {
-            vel.dx = 1;
+            vel.dy += -1;
         }
-        else vel.dx = 0;
+        if (IsKeyDown(KEY_S))
+        {
+            vel.dy += 1;
+        }
+        if (IsKeyDown(KEY_D))
+        {
+            vel.dx += 1;
+        }
+        if (IsKeyDown(KEY_A))
+        {
+            vel.dx += -1;
+        }
     });
 }

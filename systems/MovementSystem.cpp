@@ -8,5 +8,6 @@ void MovementSystem::update(entt::registry& registry, float delta)
     view.each([](const velocity vel, position& pos) 
     {
         pos.x += vel.dx;
+        pos.y += vel.dy;
     });
 }
