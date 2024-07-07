@@ -1,5 +1,6 @@
 #pragma once 
 #include "entt/entt.hpp"
+#include "WaveSpawner.h"
 
 class Game final
 {
@@ -16,6 +17,7 @@ public:
     void run();
     void tearDown();
 private:
+    WaveSpawner m_Spawner;
     entt::registry m_Registry;
 
     int m_ScreenWidth = 800;

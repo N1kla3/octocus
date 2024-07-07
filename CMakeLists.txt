@@ -31,6 +31,7 @@ add_executable(${PROJECT_NAME} main.cpp
         systems/CollisionSystem.cpp
         systems/KillSystem.h
         systems/KillSystem.cpp
-        game.h game.cpp)
+        game.h game.cpp
+        WaveSpawner.h WaveSpawner.cpp)
 
 target_link_libraries(${PROJECT_NAME} raylib EnTT::EnTT "-static-libgcc -static-libstdc++")

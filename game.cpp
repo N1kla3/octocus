@@ -54,6 +54,8 @@ void Game::tearDown()
 
 void Game::updateGameplay(float delta)
 {
+    m_Spawner.update(delta);
+
     InputSystem::update(m_Registry, delta);
     MovementSystem::update(m_Registry, delta);
     CollisionSystem::update(m_Registry);
