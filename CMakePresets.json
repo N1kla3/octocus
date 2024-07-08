@@ -10,7 +10,6 @@
             "name": "conf-common",
             "description": "General settings that apply to all configurations",
             "hidden": true,
-            "generator": "Ninja",
             "binaryDir": "${sourceDir}/${presetName}",
             "installDir": "${sourceDir}/${presetName}"
         },
@@ -19,6 +18,7 @@
             "description": "Windows settings for MSBuild toolchain that apply to msvc and clang",
             "hidden": true,
             "inherits": "conf-common",
+            "generator": "Ninja",
             "condition": {
                 "type": "equals",
                 "lhs": "${hostSystemName}",
@@ -48,6 +48,43 @@
             "description": "Target Windows with the compiler, release build type",
             "inherits": "conf-windows-common",
             "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+            }
+        },
+        {
+            "name": "conf-unixlike-common",
+            "description": "Unix-like OS settings for gcc and clang toolchains",
+            "hidden": true,
+            "inherits": "conf-common",
+            "generator": "Ninja",
+            "condition": {
+                "type": "inList",
+                "string": "${hostSystemName}",
+                "list": [
+                    "Linux",
+                    "Darwin"
+                ]
+            }
+        },
+        {
+            "name": "LinuxDebug",
+            "displayName": "gcc Debug",
+            "description": "Target Unix-like OS with the gcc compiler, debug build type",
+            "inherits": "conf-unixlike-common",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++",
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "LinuxRel",
+            "displayName": "gcc Release",
+            "description": "Target Unix-like OS with the gcc compiler, release build type",
+            "inherits": "conf-unixlike-common",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++",
                 "CMAKE_BUILD_TYPE": "RelWithDebInfo"
             }
         }

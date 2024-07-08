@@ -1,6 +1,8 @@
 /cmake-build-debug/
 /.idea/
 /DebugBuild/
+/LinuxDebug/
+/LinuxRel/
 /RelBuild/
 compile_commands.json
 /.cache/
