@@ -5,7 +5,7 @@
 #include "raylib.h"
 #include "WeaponComponent.h"
 
-void WaveSpawner::spawnRangeEnemy(entt::registry& registry)
+void WaveSpawner::spawnRangeEnemy(entt::registry& registry, float posx, float posy, int hp)
 {
     auto entity = registry.create();
     registry.emplace<Health>(entity, 10, 10);
@@ -17,7 +17,7 @@ void WaveSpawner::spawnRangeEnemy(entt::registry& registry)
 
 }
 
-void WaveSpawner::spawnMeleeEnemy(entt::registry& registry)
+void WaveSpawner::spawnMeleeEnemy(entt::registry& registry, float posx, float posy, int hp)
 {
     auto entity = registry.create();
     registry.emplace<Health>(entity, 10, 10);
@@ -27,13 +27,28 @@ void WaveSpawner::spawnMeleeEnemy(entt::registry& registry)
     registry.emplace<RenderComponent>(entity, BLUE, 10.f, RenderPriority::MIDLE);
 }
 
+void WaveSpawner::spawnEnemies(entt::registry& registry, size_t count)
+{
+    float x, y;
+    for (size_t i = 0; i < count; i++)
+    {
+        requestSpawnLocation(x, y);
+        spawnMeleeEnemy(registry, x, y, 10);
+    }
+}
+
+void WaveSpawner::requestSpawnLocation(float& posx, float& posy)
+{
+}
+
 void WaveSpawner::startWave(entt::registry& registry)
 {
     if (m_WaveCounter < s_Waves.size())
     {
         m_EnemiesToSpawn = s_Waves[m_WaveCounter];
-        spawnRangeEnemy(registry);
-        spawnMeleeEnemy(registry);
+        spawnEnemies(registry, m_EnemiesToSpawn);
+        //spawnRangeEnemy(registry);
+        //spawnMeleeEnemy(registry);
     }
 }
 
