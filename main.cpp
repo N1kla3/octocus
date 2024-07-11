@@ -2,15 +2,16 @@
 
 int main()
 {
-    Game game{};
+    Game* game = new Game{};
 
     try
     {
-        game.init();
-        game.run();
+        game->init();
+        game->run();
     }
     catch (const char* str)
     {
-
+        delete game;
     }
+    delete game;
 }

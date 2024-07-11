@@ -6,10 +6,19 @@
 #include "DamageSystem.h"
 #include "KillSystem.h"
 #include "AttackSystem.h"
+#include "LifeComponents.h"
+#include "WeaponComponent.h"
 #include "DrawSystem.h"
 #include "MovementSystem.h"
 #include "InputSystem.h"
 #include <chrono>
+
+Game::Game()
+    : m_Spawner(this, m_ScreenHeight, m_ScreenWidth)
+    , m_Registry()
+{
+    
+}
 
 void Game::init()
 {
@@ -50,6 +59,27 @@ void Game::update(float delta)
 void Game::tearDown()
 {
     CloseWindow();
+}
+
+void Game::spawnMelee(const SpawnParam& param)
+{
+    auto entity = m_Registry.create();
+    m_Registry.emplace<Health>(entity, param.health, param.health);
+    m_Registry.emplace<position>(entity, param.posx, param.posy);
+    m_Registry.emplace<velocity>(entity, 0.f, 0.f);
+    m_Registry.emplace<sphere_collision>(entity, param.size);
+    m_Registry.emplace<RenderComponent>(entity, BLUE, param.size, RenderPriority::MIDLE);
+}
+
+void Game::spawnRange(const SpawnParam& param)
+{
+    auto entity = m_Registry.create();
+    m_Registry.emplace<Health>(entity, param.health, param.health);
+    m_Registry.emplace<position>(entity, param.posx, param.posy);
+    m_Registry.emplace<velocity>(entity, 0.f, 0.f);
+    m_Registry.emplace<sphere_collision>(entity, param.size);
+    m_Registry.emplace<RenderComponent>(entity, BLUE, param.size, RenderPriority::MIDLE);
+    m_Registry.emplace<WeaponComponent>(entity, param.damage, 10.f, 2.f, true);
 }
 
 void Game::updateGameplay(float delta)
