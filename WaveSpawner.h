@@ -1,6 +1,6 @@
 #pragma once
 #include <array>
-#include "entt/entt.hpp"
+#include <random>
 
 class WaveSpawner
 {
@@ -13,21 +13,26 @@ class WaveSpawner
 
     inline static std::array<int, 12> s_Waves = { 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240 };
 private:
-    void spawnEnemies(entt::registry& registry, size_t count);
+    void addSpawnPoint(size_t count);
     void requestSpawnLocation(int& posx, int& posy);
     void spawnBunch(SpawnPoint& point);
+    bool continueSpawnWave(size_t count);
 
     std::vector<SpawnPoint> m_SpawnPoints;
+    std::default_random_engine m_RandomEngine;
     class Game* m_Parent;
-    size_t m_WaveCounter = 0;
+
+    size_t m_WaveCounter = 1;
     int m_EnemiesToSpawn = 0;
     int m_Height, m_Width;
-    float time_since_lastspawn = 0.f;
+    float m_TimeSinceLastSpawn = 0.f;
+    const int m_SpawnCountCoef = 2;
+    bool m_IsSpawning = false;
 
 public:
     WaveSpawner() = delete;
     WaveSpawner(Game* parent, int height, int width);
-    void startWave(entt::registry& registry);
+    void startWave();
     void update(float delta);
 };
 
