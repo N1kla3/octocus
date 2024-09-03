@@ -36,4 +36,6 @@ private:
     void update(float delta);
     void updateGameplay(float delta);
     void updateDrawFrame(float delta);
+
+    void createPlayer();
 };

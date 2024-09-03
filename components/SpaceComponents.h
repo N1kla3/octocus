@@ -21,3 +21,8 @@ struct collision_resolver
 {
     std::vector<entt::entity> hit_entities;
 };
+
+struct player
+{
+
+};

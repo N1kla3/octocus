@@ -34,5 +34,7 @@ public:
     WaveSpawner(Game* parent, int height, int width);
     void startWave();
     void update(float delta);
+    bool isCurrentlySpawning() const { return m_IsSpawning; }
+    float getTimeSinceLastSpawn() const { return m_TimeSinceLastSpawn; }
 };
 

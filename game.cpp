@@ -2,6 +2,7 @@
 #include "CollisionSystem.h"
 #include "raylib.h"
 #include "SpaceComponents.h"
+#include <iostream>
 #include "RenderComponent.h"
 #include "DamageSystem.h"
 #include "KillSystem.h"
@@ -26,10 +27,7 @@ void Game::init()
 
     SetTargetFPS(120);
 
-    auto entity = m_Registry.create();
-    m_Registry.emplace<RenderComponent>(entity, ORANGE, 10.f);
-    m_Registry.emplace<position>(entity, 20.f, 20.f);
-    m_Registry.emplace<velocity>(entity, 0.f, 0.f);
+    createPlayer();
 }
 
 void Game::run()
@@ -69,6 +67,7 @@ void Game::spawnMelee(const SpawnParam& param)
     m_Registry.emplace<velocity>(entity, 0.f, 0.f);
     m_Registry.emplace<sphere_collision>(entity, param.size);
     m_Registry.emplace<RenderComponent>(entity, BLUE, param.size, RenderPriority::MIDLE);
+    std::cout << "spawned melee at pos" << param.posx << " " << param.posy << std::endl;
 }
 
 void Game::spawnRange(const SpawnParam& param)
@@ -84,6 +83,10 @@ void Game::spawnRange(const SpawnParam& param)
 
 void Game::updateGameplay(float delta)
 {
+    if (!m_Spawner.isCurrentlySpawning() && m_Spawner.getTimeSinceLastSpawn() > 3.f)
+    {
+        m_Spawner.startWave();
+    }
     m_Spawner.update(delta);
 
     InputSystem::update(m_Registry, delta);
@@ -125,3 +128,17 @@ void Game::updateDrawFrame(float delta)
 
     EndDrawing();
 }
+
+void Game::createPlayer()
+{
+    auto entity = m_Registry.create();
+    m_Registry.emplace<player>(entity); // similar like tag, alternative
+    m_Registry.emplace<RenderComponent>(entity, ORANGE, 10.f);
+    m_Registry.emplace<Health>(entity, 100.f, 100.f);
+    m_Registry.emplace<position>(entity, 20.f, 20.f);
+    m_Registry.emplace<velocity>(entity, 0.f, 0.f);
+    m_Registry.emplace<WeaponComponent>(entity, 10.f, 10.f, 0.4f, false);
+    m_Registry.emplace<sphere_collision>(entity, 10.f);
+    m_Registry.emplace<collision_resolver>(entity);
+}
+

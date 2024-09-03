@@ -13,8 +13,8 @@ void WaveSpawner::addSpawnPoint(size_t count)
 
 void WaveSpawner::requestSpawnLocation(int& posx, int& posy)
 {
-    std::poisson_distribution<int> dist(m_Height); 
-    std::poisson_distribution<int> dist_y(m_Width); 
+    std::uniform_int_distribution<int> dist(0, m_Width); 
+    std::uniform_int_distribution<int> dist_y(0, m_Height); 
     posx = dist(m_RandomEngine);
     posy = dist_y(m_RandomEngine); 
 }
@@ -34,12 +34,13 @@ void WaveSpawner::spawnBunch(SpawnPoint& point)
         // TODO: melee range
         m_Parent->spawnMelee(params);
     }
+    m_TimeSinceLastSpawn = 0.f;
 }
 
 bool WaveSpawner::continueSpawnWave(size_t count)
 {
     m_EnemiesToSpawn -= count;
-    m_IsSpawning = m_EnemiesToSpawn <= 0;
+    m_IsSpawning = m_EnemiesToSpawn >= 0;
     if (m_IsSpawning)
     {
         addSpawnPoint(count);
@@ -60,14 +61,19 @@ void WaveSpawner::startWave()
     if (m_WaveCounter < s_Waves.size())
     {
         m_EnemiesToSpawn = s_Waves[m_WaveCounter];
-        continueSpawnWave(m_WaveCounter * m_SpawnCountCoef);
     }
+    m_WaveCounter++;
+    m_TimeSinceLastSpawn = 0.f;
 }
 
 void WaveSpawner::update(float delta)
 {
     bool should_continue_spawn = continueSpawnWave(m_WaveCounter * m_SpawnCountCoef);
-    if (m_SpawnPoints.empty() && should_continue_spawn) return;
+    if (m_SpawnPoints.empty() && !should_continue_spawn)
+    {
+        m_TimeSinceLastSpawn += delta;
+        return;
+    }
 
     for (auto it = m_SpawnPoints.begin(); it != m_SpawnPoints.end(); )
     {
