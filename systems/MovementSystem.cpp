@@ -3,7 +3,7 @@
 
 void MovementSystem::update(entt::registry& registry, float delta)
 {
-    auto view = registry.view<const velocity, position, player>();
+    auto view = registry.view<const velocity, position>();
 
     view.each([](const velocity vel, position& pos) 
     {

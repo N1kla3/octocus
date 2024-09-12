@@ -3,6 +3,7 @@
 #include "WeaponComponent.h"
 #include "SpaceComponents.h"
 #include "raylib.h"
+#include "raymath.h"
 
 void InputSystem::update(entt::registry& registry, float delta)
 {
@@ -39,13 +40,17 @@ void InputSystem::update(entt::registry& registry, float delta)
         veloc = vel;
     });
 
-    auto weapon_view = registry.view<ShootComponent, player>(); 
+    auto weapon_view = registry.view<ShootComponent, position, player>(); 
+
 
     float mousex = static_cast<float>(GetMouseX());
     float mousey = static_cast<float>(GetMouseY());
-    weapon_view.each([mousex, mousey](ShootComponent& shoot)
+
+
+    weapon_view.each([mousex, mousey](ShootComponent& shoot, position pos)
     {
-        shoot.target_x = mousex;
-        shoot.target_y = mousey;
+        Vector2 res = Vector2Normalize({mousex - pos.x, mousey - pos.y});
+        shoot.target_x = res.x;
+        shoot.target_y = res.y;
     });
 }
