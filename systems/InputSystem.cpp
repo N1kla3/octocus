@@ -35,7 +35,7 @@ void InputSystem::update(entt::registry& registry, float delta)
         vel.dy /= len;
     }
 
-    view.each([vel](velocity& veloc) 
+    view.each([vel](velocity& veloc, player pl) 
     {
         veloc = vel;
     });
@@ -47,7 +47,7 @@ void InputSystem::update(entt::registry& registry, float delta)
     float mousey = static_cast<float>(GetMouseY());
 
 
-    weapon_view.each([mousex, mousey](ShootComponent& shoot, position pos)
+    weapon_view.each([mousex, mousey](ShootComponent& shoot, position pos, player pl)
     {
         Vector2 res = Vector2Normalize({mousex - pos.x, mousey - pos.y});
         shoot.target_x = res.x;

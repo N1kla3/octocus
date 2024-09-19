@@ -8,5 +8,10 @@ struct Health
 
 struct Damage
 {
-    int points;
+    float points = 0;
+};
+
+struct Cooldown
+{
+    float duration;
 };

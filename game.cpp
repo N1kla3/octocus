@@ -2,7 +2,6 @@
 #include "CollisionSystem.h"
 #include "raylib.h"
 #include "SpaceComponents.h"
-#include <iostream>
 #include "RenderComponent.h"
 #include "DamageSystem.h"
 #include "KillSystem.h"
@@ -65,9 +64,11 @@ void Game::spawnMelee(const SpawnParam& param)
     m_Registry.emplace<Health>(entity, param.health, param.health);
     m_Registry.emplace<position>(entity, param.posx, param.posy);
     m_Registry.emplace<velocity>(entity, 0.f, 0.f);
-    m_Registry.emplace<sphere_collision>(entity, param.size);
+    m_Registry.emplace<sphere_collision>(entity, param.size, CollisionChannel::BOT);
     m_Registry.emplace<RenderComponent>(entity, BLUE, param.size, RenderPriority::MIDLE);
-    m_Registry.emplace<WeaponComponent>(entity, param.damage, 10.f, 2.f, true);
+    m_Registry.emplace<WeaponComponent>(entity, param.damage, 10.f, 2.f);
+    m_Registry.emplace<Damage>(entity);
+    m_Registry.emplace<bot>(entity);
     //std::cout << "spawned melee at pos" << param.posx << " " << param.posy << std::endl;
 }
 
@@ -77,9 +78,11 @@ void Game::spawnRange(const SpawnParam& param)
     m_Registry.emplace<Health>(entity, param.health, param.health);
     m_Registry.emplace<position>(entity, param.posx, param.posy);
     m_Registry.emplace<velocity>(entity, 0.f, 0.f);
-    m_Registry.emplace<sphere_collision>(entity, param.size);
+    m_Registry.emplace<sphere_collision>(entity, param.size, CollisionChannel::BOT);
     m_Registry.emplace<RenderComponent>(entity, BLUE, param.size, RenderPriority::MIDLE);
-    m_Registry.emplace<ShootComponent>(entity, param.damage, 10.f, 0.f);
+    m_Registry.emplace<ShootComponent>(entity, param.damage, 10.f, 2.f);
+    m_Registry.emplace<Damage>(entity);
+    m_Registry.emplace<bot>(entity);
 }
 
 void Game::updateGameplay(float delta)
@@ -95,7 +98,7 @@ void Game::updateGameplay(float delta)
     CollisionSystem::update(m_Registry);
     AttackSystem::update(m_Registry, delta);
     DamageSystem::updateDamage(m_Registry);
-    KillSystem::update(m_Registry);
+    KillSystem::update(m_Registry, delta);
     return;
     auto view = m_Registry.view<const position, velocity>();
 
@@ -140,7 +143,8 @@ void Game::createPlayer()
     m_Registry.emplace<velocity>(entity, 0.f, 0.f);
     m_Registry.emplace<WeaponComponent>(entity, 10.f, 10.f, 0.4f, false);
     m_Registry.emplace<ShootComponent>(entity, 10.f, 1.f, 0.0f);
-    m_Registry.emplace<sphere_collision>(entity, 10.f);
+    m_Registry.emplace<sphere_collision>(entity, 10.f, CollisionChannel::PLAYER);
     m_Registry.emplace<collision_resolver>(entity);
+    m_Registry.emplace<Damage>(entity);
 }
 

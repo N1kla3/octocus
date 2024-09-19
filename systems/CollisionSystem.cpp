@@ -14,8 +14,9 @@ void CollisionSystem::update(entt::registry& registry)
         {
             if (main_ent == entity) return;
 
+            bool same_channel = collision.channel == other_coll.channel;
             bool result = CheckCollisionCircles({pos.x, pos.y}, collision.radius, {other_pos.x, other_pos.y}, other_coll.radius);
-            if (result)
+            if (result && same_channel)
             {
                 resolver.hit_entities.push_back(entity);
             }

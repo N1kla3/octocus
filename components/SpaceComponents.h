@@ -2,6 +2,12 @@
 #include <vector>
 #include "entt/entt.hpp"
 
+enum class CollisionChannel
+{
+    PLAYER,
+    BOT
+};
+
 struct position {
     float x;
     float y;
@@ -15,6 +21,7 @@ struct velocity {
 struct sphere_collision
 {
     float radius;
+    CollisionChannel channel;
 };
 
 struct collision_resolver
@@ -24,5 +31,10 @@ struct collision_resolver
 
 struct player
 {
+    int id;
+};
 
+struct bot
+{
+    int id;
 };
