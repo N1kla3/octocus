@@ -1,7 +1,6 @@
 #include "DamageSystem.h"
 #include "WeaponComponent.h"
 #include "SpaceComponents.h"
-#include <iostream>
 #include "LifeComponents.h"
 
 void DamageSystem::updateDamage(entt::registry &registry)
@@ -17,8 +16,11 @@ void DamageSystem::updateDamage(entt::registry &registry)
             {
                 hit_damage->points += damage.damage;
                 registry.emplace<DeathComponent>(hit);
-                std::cout << "Hit" << std::endl;
             }
+        }
+        if (!resolver.hit_entities.empty())
+        {
+              registry.emplace<DeathComponent>(entity);
         }
     });
 }

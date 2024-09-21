@@ -5,7 +5,9 @@
 enum class CollisionChannel
 {
     PLAYER,
-    BOT
+    BOT,
+    WEAPON,
+    NONE
 };
 
 struct position {
@@ -22,6 +24,7 @@ struct sphere_collision
 {
     float radius;
     CollisionChannel channel;
+    CollisionChannel responce_channel = CollisionChannel::NONE;
 };
 
 struct collision_resolver

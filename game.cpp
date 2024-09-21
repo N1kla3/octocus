@@ -141,8 +141,8 @@ void Game::createPlayer()
     m_Registry.emplace<Health>(entity, 100.f, 100.f);
     m_Registry.emplace<position>(entity, 20.f, 20.f);
     m_Registry.emplace<velocity>(entity, 0.f, 0.f);
-    m_Registry.emplace<WeaponComponent>(entity, 10.f, 10.f, 0.4f, false);
-    m_Registry.emplace<ShootComponent>(entity, 10.f, 1.f, 0.0f);
+    m_Registry.emplace<WeaponComponent>(entity, 10.f, 10.f, 1.3f);
+    m_Registry.emplace<ShootComponent>(entity, 10.f, 0.5f, 0.0f);
     m_Registry.emplace<sphere_collision>(entity, 10.f, CollisionChannel::PLAYER);
     m_Registry.emplace<collision_resolver>(entity);
     m_Registry.emplace<Damage>(entity);
