@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "raylib.h"
 #include "entt/entt.hpp"
 
 enum class CollisionChannel
@@ -40,4 +41,12 @@ struct player
 struct bot
 {
     int id;
+};
+
+struct cameraTarget
+{
+    Vector2 offset = {0.f, 0.f};
+    float rotation = 0.f;
+    float zoom = 1.f;
+
 };

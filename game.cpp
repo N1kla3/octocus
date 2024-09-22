@@ -146,5 +146,6 @@ void Game::createPlayer()
     m_Registry.emplace<sphere_collision>(entity, 10.f, CollisionChannel::PLAYER);
     m_Registry.emplace<collision_resolver>(entity);
     m_Registry.emplace<Damage>(entity);
+    m_Registry.emplace<cameraTarget>(entity);
 }
 

@@ -1,5 +1,6 @@
 #include "InputSystem.h"
 #include <cmath>
+#include "../game.h"
 #include "WeaponComponent.h"
 #include "SpaceComponents.h"
 #include "raylib.h"
@@ -35,6 +36,8 @@ void InputSystem::update(entt::registry& registry, float delta)
         vel.dx /= len;
         vel.dy /= len;
     }
+    vel.dx *= 3.f;
+    vel.dy *= 3.f;
 
     if (IsKeyDown(KEY_SPACE))
     {
@@ -55,7 +58,7 @@ void InputSystem::update(entt::registry& registry, float delta)
 
     weapon_view.each([mousex, mousey, request_attack](WeaponComponent& weap, ShootComponent& shoot, position pos, player pl)
     {
-        Vector2 res = Vector2Normalize({mousex - pos.x, mousey - pos.y});
+        Vector2 res = Vector2Normalize({mousex - static_cast<float>(Game::m_ScreenWidth)/2, mousey - static_cast<float>(Game::m_ScreenHeight)/2 });
         shoot.target_x = res.x;
         shoot.target_y = res.y;
         weap.attack = request_attack;

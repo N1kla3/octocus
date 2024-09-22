@@ -26,12 +26,12 @@ public:
     void tearDown();
     void spawnMelee(const SpawnParam& param);
     void spawnRange(const SpawnParam& param);
+    inline static const int m_ScreenWidth = 800;
+    inline static const int m_ScreenHeight = 450;
 private:
     WaveSpawner m_Spawner;
     entt::registry m_Registry;
 
-    inline static const int m_ScreenWidth = 800;
-    inline static const int m_ScreenHeight = 450;
 
     void update(float delta);
     void updateGameplay(float delta);
