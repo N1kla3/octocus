@@ -138,7 +138,7 @@ void Game::createPlayer()
     auto entity = m_Registry.create();
     m_Registry.emplace<player>(entity); // similar like tag, alternative
     m_Registry.emplace<RenderComponent>(entity, ORANGE, 10.f);
-    m_Registry.emplace<Health>(entity, 100.f, 100.f);
+    m_Registry.emplace<Health>(entity, 100, 100);
     m_Registry.emplace<position>(entity, 20.f, 20.f);
     m_Registry.emplace<velocity>(entity, 0.f, 0.f);
     m_Registry.emplace<WeaponComponent>(entity, 10.f, 10.f, 1.3f);

@@ -4,7 +4,7 @@
 
 struct SpawnParam
 {
-    int posx, posy;
+    float posx, posy;
     int health;
     float size;
     float damage;
