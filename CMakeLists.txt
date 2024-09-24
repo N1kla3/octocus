@@ -18,6 +18,7 @@ add_executable(${PROJECT_NAME} main.cpp
         components/RenderComponent.h
         components/WeaponComponent.h
         components/AiComponents.h
+        components/StatusComponents.h
         systems/DamageSystem.cpp
         systems/DamageSystem.h
         systems/InputSystem.h

@@ -25,5 +25,11 @@ void DrawSystem::update(entt::registry& registry, float delta)
     });
     EndMode2D();
 
+    updateui(registry, delta);
+}
+
+void DrawSystem::updateui(entt::registry& registry, float delta)
+{
     DrawText("Hello", 0.f, 0.f, 10.f, RED);
+
 }
