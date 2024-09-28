@@ -16,6 +16,15 @@ void KillSystem::update(entt::registry& registry, float delta, GameStatus& statu
         }
     });
 
+    auto projectile_view = registry.view<DamageHitComponent>();
+    for (const auto& [entity, projectile] : projectile_view.each())
+    {
+        if (projectile.hit)
+        {
+            registry.destroy(entity);
+        }
+    }
+
     auto damage_check_view = registry.view<Damage, Health>();
 
     damage_check_view.each([&registry](auto entity, Damage& damage, Health& health)
