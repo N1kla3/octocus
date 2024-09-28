@@ -3,8 +3,7 @@
 #include "RenderComponent.h"
 #include "../game.h"
 #include "raylib.h"
-
-void DrawSystem::update(entt::registry& registry, float delta)
+void DrawSystem::update(entt::registry& registry, float delta, GameStatus status)
 {
     auto camera_view = registry.view<const position, const cameraTarget>();
     camera_view.each([](const position pos, const cameraTarget target)
@@ -25,11 +24,15 @@ void DrawSystem::update(entt::registry& registry, float delta)
     });
     EndMode2D();
 
-    updateui(registry, delta);
+    updateui(registry, delta, status);
 }
 
-void DrawSystem::updateui(entt::registry& registry, float delta)
+void DrawSystem::updateui(entt::registry& registry, float delta, GameStatus status)
 {
-    DrawText("Hello", 0.f, 0.f, 10.f, RED);
+    DrawText(TextFormat("Score: %i", status.score), 0.f, 0.f, 28.f, RED);
 
+    if (status.is_player_dead)
+    {
+        //
+    }
 }

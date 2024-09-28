@@ -2,6 +2,7 @@
 #include "CollisionSystem.h"
 #include "raylib.h"
 #include "SpaceComponents.h"
+#include "StatusComponents.h"
 #include "RenderComponent.h"
 #include "DamageSystem.h"
 #include "KillSystem.h"
@@ -87,9 +88,15 @@ void Game::spawnRange(const SpawnParam& param)
 
 void Game::updateGameplay(float delta)
 {
+    if (m_Status.is_player_dead)
+    {
+
+    }
+
     if (!m_Spawner.isCurrentlySpawning() && m_Spawner.getTimeSinceLastSpawn() > 3.f)
     {
         m_Spawner.startWave();
+        m_Status.wave_finished = true;
     }
     m_Spawner.update(delta);
 
@@ -98,26 +105,7 @@ void Game::updateGameplay(float delta)
     CollisionSystem::update(m_Registry);
     AttackSystem::update(m_Registry, delta);
     DamageSystem::updateDamage(m_Registry);
-    KillSystem::update(m_Registry, delta);
-    return;
-    auto view = m_Registry.view<const position, velocity>();
-
-    // use a callback
-    view.each([](const auto &pos, auto &vel) { /* ... */ });
-
-    // use an extended callback
-    view.each([](const auto entity, const auto &pos, auto &vel) { /* ... */ });
-
-    // use a range-for
-    for(auto [entity, pos, vel]: view.each()) {
-        // ...
-    }
-
-    // use forward iterators and get only the components of interest
-    for(auto entity: view) {
-        auto &vel = view.get<velocity>(entity);
-        // ...
-    }
+    KillSystem::update(m_Registry, delta, m_Status);
 }
 
 void Game::updateDrawFrame(float delta)
@@ -126,9 +114,7 @@ void Game::updateDrawFrame(float delta)
 
     ClearBackground(RAYWHITE);
 
-    DrawSystem::update(m_Registry, delta);
-
-    //DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
+    DrawSystem::update(m_Registry, delta, m_Status);
 
     EndDrawing();
 }

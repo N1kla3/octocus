@@ -1,4 +1,5 @@
 #pragma once 
+#include "StatusComponents.h"
 #include "entt/entt.hpp"
 #include "WaveSpawner.h"
 
@@ -31,6 +32,8 @@ public:
 private:
     WaveSpawner m_Spawner;
     entt::registry m_Registry;
+
+    GameStatus m_Status;
 
 
     void update(float delta);
