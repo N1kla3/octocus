@@ -52,7 +52,7 @@ WaveSpawner::WaveSpawner(Game* parent, int height, int width)
     : m_Parent(parent)
     , m_Height(height)
     , m_Width(width)
-    , m_RandomEngine()
+    , m_RandomEngine(m_RandomDevice())
 {
 }
 

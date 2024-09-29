@@ -70,6 +70,7 @@ void Game::spawnMelee(const SpawnParam& param)
     m_Registry.emplace<WeaponComponent>(entity, param.damage, 10.f, 2.f);
     m_Registry.emplace<Damage>(entity);
     m_Registry.emplace<bot>(entity);
+    m_Status.enemies_left++;
     //std::cout << "spawned melee at pos" << param.posx << " " << param.posy << std::endl;
 }
 
@@ -84,6 +85,7 @@ void Game::spawnRange(const SpawnParam& param)
     m_Registry.emplace<ShootComponent>(entity, param.damage, 10.f, 2.f);
     m_Registry.emplace<Damage>(entity);
     m_Registry.emplace<bot>(entity);
+    m_Status.enemies_left++;
 }
 
 void Game::updateGameplay(float delta)
@@ -93,10 +95,18 @@ void Game::updateGameplay(float delta)
 
     }
 
-    if (!m_Spawner.isCurrentlySpawning() && m_Spawner.getTimeSinceLastSpawn() > 3.f)
+    if (!m_Spawner.isCurrentlySpawning() && m_Status.enemies_left == 0)
     {
-        m_Spawner.startWave();
-        m_Status.wave_finished = true;
+        if (m_WaveDelay > 3.f)
+        {
+            m_Spawner.startWave();
+            m_Status.wave_finished = true;
+            m_WaveDelay = 0.f;
+        }
+        else
+        {
+            m_WaveDelay += delta;
+        }
     }
     m_Spawner.update(delta);
 

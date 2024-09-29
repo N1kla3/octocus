@@ -34,6 +34,8 @@ add_executable(${PROJECT_NAME} main.cpp
         systems/CollisionSystem.cpp
         systems/KillSystem.h
         systems/KillSystem.cpp
+        systems/AnimationSystem.h
+        systems/AnimationSystem.cpp
         game.h game.cpp
         WaveSpawner.h WaveSpawner.cpp)
 

@@ -1,6 +1,8 @@
 #include "DrawSystem.h"
 #include "SpaceComponents.h"
+#include "AnimationSystem.h"
 #include "RenderComponent.h"
+#include "Animation.h"
 #include "../game.h"
 #include "raylib.h"
 
@@ -32,14 +34,19 @@ void DrawSystem::update(entt::registry& registry, float delta, GameStatus status
     DrawCircleV(Vector2{half_width, half_height}, player_render.radius, player_render.color);
 
     updateui(registry, delta, status);
+
 }
 
 void DrawSystem::updateui(entt::registry& registry, float delta, GameStatus status)
 {
     DrawText(TextFormat("Score: %i", status.score), 0.f, 0.f, 28.f, RED);
+    DrawText(TextFormat("Enemies left: %i", status.enemies_left), 300.f, 0.f, 28.f, RED);
 
     if (status.is_player_dead)
     {
-        //
+        //auto ent = registry.create();
+        //registry.emplace<TextAnimation>(ent);
     }
+
+    AnimationSystem::updateAnimation(registry, delta);
 }

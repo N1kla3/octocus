@@ -13,6 +13,7 @@ struct SpawnParam
 
 class Game final
 {
+public:
     Game(const Game& other) = delete;
     Game(Game&& other) = delete;
     Game& operator=(const Game& other) = delete;
@@ -34,6 +35,7 @@ private:
     entt::registry m_Registry;
 
     GameStatus m_Status;
+    float m_WaveDelay = 0.f;
 
 
     void update(float delta);

@@ -37,7 +37,7 @@ void KillSystem::update(entt::registry& registry, float delta, GameStatus& statu
         }
     });
     auto bot_score = registry.view<DeathComponent, bot>();
-    bot_score.each([&registry, &status](auto entity) { status.score++; } );
+    bot_score.each([&registry, &status](auto entity) { status.score++; status.enemies_left--; } );
 
     auto player_dead = registry.view<DeathComponent, player>();
     player_dead.each([&registry, &status](auto entity) { status.is_player_dead = true; } );

@@ -19,6 +19,7 @@ private:
     bool continueSpawnWave(size_t count);
 
     std::vector<SpawnPoint> m_SpawnPoints;
+    std::random_device m_RandomDevice;
     std::default_random_engine m_RandomEngine;
     class Game* m_Parent;
 
