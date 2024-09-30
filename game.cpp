@@ -1,4 +1,5 @@
 #include "game.h"
+#include "BorderComponent.h"
 #include "CollisionSystem.h"
 #include "raylib.h"
 #include "SpaceComponents.h"
@@ -26,6 +27,8 @@ void Game::init()
     InitWindow(m_ScreenWidth, m_ScreenHeight, "Octocus");
 
     SetTargetFPS(120);
+
+    spawnBorders();
 
     createPlayer();
 }
@@ -143,5 +146,20 @@ void Game::createPlayer()
     m_Registry.emplace<collision_resolver>(entity);
     m_Registry.emplace<Damage>(entity);
     m_Registry.emplace<cameraTarget>(entity);
+}
+
+void Game::spawnBorders()
+{
+    auto left = m_Registry.create();
+    m_Registry.emplace<border>(left, Vector2{ 0.f - 1000.f, 0.f - 2 * m_ScreenHeight }, Vector2{ 0.f, 0.f + 2 * m_ScreenHeight }, BROWN);
+
+    auto right = m_Registry.create();
+    m_Registry.emplace<border>(right, Vector2{ m_ScreenWidth, m_ScreenHeight + 1000.f }, Vector2{ m_ScreenWidth + 1000.f, 0.f - 1000.f }, BROWN);
+
+    auto top = m_Registry.create();
+    m_Registry.emplace<border>(top, Vector2{ 0.f, 0.f }, Vector2{ m_ScreenWidth, -m_ScreenHeight }, BROWN);
+
+    auto bottom = m_Registry.create();
+    m_Registry.emplace<border>(bottom, Vector2{ 0.f, 0.f + 2 * m_ScreenHeight }, Vector2{ m_ScreenWidth, m_ScreenHeight }, BROWN);
 }
 

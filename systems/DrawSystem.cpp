@@ -1,4 +1,5 @@
 #include "DrawSystem.h"
+#include "BorderComponent.h"
 #include "SpaceComponents.h"
 #include "AnimationSystem.h"
 #include "RenderComponent.h"
@@ -21,6 +22,12 @@ void DrawSystem::update(entt::registry& registry, float delta, GameStatus status
         camera.rotation = target.rotation;
         BeginMode2D(camera);
         player_render = render;
+    }
+
+    auto border_view = registry.view<border>();
+    for (const auto& [ent, border] : border_view.each())
+    {
+        DrawRectangleRec(border.getRect(), border.color);
     }
 
     auto view = registry.view<const position, const RenderComponent>(entt::exclude<player>);

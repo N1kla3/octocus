@@ -20,6 +20,7 @@ add_executable(${PROJECT_NAME} main.cpp
         components/AiComponents.h
         components/StatusComponents.h
         components/Animation.h
+        components/BorderComponent.h
         systems/DamageSystem.cpp
         systems/DamageSystem.h
         systems/InputSystem.h

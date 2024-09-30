@@ -43,4 +43,5 @@ private:
     void updateDrawFrame(float delta);
 
     void createPlayer();
+    void spawnBorders();
 };
