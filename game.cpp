@@ -93,11 +93,6 @@ void Game::spawnRange(const SpawnParam& param)
 
 void Game::updateGameplay(float delta)
 {
-    if (m_Status.is_player_dead)
-    {
-
-    }
-
     if (!m_Spawner.isCurrentlySpawning() && m_Status.enemies_left == 0)
     {
         if (m_WaveDelay > 3.f)
@@ -105,20 +100,25 @@ void Game::updateGameplay(float delta)
             m_Spawner.startWave();
             m_Status.wave_finished = true;
             m_WaveDelay = 0.f;
+            m_Status.next_wave_timer = 0.f;
         }
-        else
+        else if (!m_Spawner.isCurrentlySpawning())
         {
             m_WaveDelay += delta;
+            m_Status.next_wave_timer = 3.f - m_WaveDelay;
         }
     }
     m_Spawner.update(delta);
 
-    InputSystem::update(m_Registry, delta);
-    MovementSystem::update(m_Registry, delta);
-    CollisionSystem::update(m_Registry);
-    AttackSystem::update(m_Registry, delta);
-    DamageSystem::updateDamage(m_Registry);
-    KillSystem::update(m_Registry, delta, m_Status);
+    if (!m_Status.is_player_dead)
+    {
+        InputSystem::update(m_Registry, delta);
+        MovementSystem::update(m_Registry, delta);
+        CollisionSystem::update(m_Registry);
+        AttackSystem::update(m_Registry, delta);
+        DamageSystem::updateDamage(m_Registry);
+        KillSystem::update(m_Registry, delta, m_Status);
+    }
 }
 
 void Game::updateDrawFrame(float delta)
@@ -140,8 +140,8 @@ void Game::createPlayer()
     m_Registry.emplace<Health>(entity, 100, 100);
     m_Registry.emplace<position>(entity, 20.f, 20.f);
     m_Registry.emplace<velocity>(entity, 0.f, 0.f);
-    m_Registry.emplace<WeaponComponent>(entity, 10.f, 10.f, 1.3f);
-    m_Registry.emplace<ShootComponent>(entity, 10.f, 0.5f, 0.0f);
+    m_Registry.emplace<WeaponComponent>(entity, 44410.f, 15.f, 1.3f);
+    m_Registry.emplace<ShootComponent>(entity, 55510.f, 0.5f, 0.0f);
     m_Registry.emplace<sphere_collision>(entity, 10.f, CollisionChannel::PLAYER);
     m_Registry.emplace<collision_resolver>(entity);
     m_Registry.emplace<Damage>(entity);
@@ -161,5 +161,11 @@ void Game::spawnBorders()
 
     auto bottom = m_Registry.create();
     m_Registry.emplace<border>(bottom, Vector2{ 0.f, 0.f + 2 * m_ScreenHeight }, Vector2{ m_ScreenWidth, m_ScreenHeight }, BROWN);
+
+    Rectangle&& rect{};
+    rect.x = 0.f;
+    rect.y = 0.f;
+    rect.width = m_ScreenWidth;
+    rect.height = m_ScreenHeight;
 }
 

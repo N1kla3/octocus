@@ -19,10 +19,10 @@ void AttackSystem::update(entt::registry& registry, float deltaTime)
             weapon.cooldown = 0.f;
             auto entity = registry.create();
             registry.emplace<position>(entity, pos);
-            registry.emplace<RenderComponent>(entity, RED, 17.f, RenderPriority::LOW);
-            registry.emplace<sphere_collision>(entity, 17.f, CollisionChannel::WEAPON, channel);
+            registry.emplace<RenderComponent>(entity, RED, weapon.range, RenderPriority::LOW);
+            registry.emplace<sphere_collision>(entity, weapon.range, CollisionChannel::WEAPON, channel);
             registry.emplace<collision_resolver>(entity);
-            registry.emplace<DamageHitComponent>(entity, 30.f);
+            registry.emplace<DamageHitComponent>(entity, weapon.damage, true);
             registry.emplace<Cooldown>(entity, 2.f);
         }
     });
@@ -42,7 +42,7 @@ void AttackSystem::update(entt::registry& registry, float deltaTime)
             registry.emplace<RenderComponent>(entity, GREEN, 3.f, RenderPriority::LOW);
             registry.emplace<sphere_collision>(entity, 3.f, CollisionChannel::WEAPON, channel);
             registry.emplace<collision_resolver>(entity);
-            registry.emplace<DamageHitComponent>(entity, 20.f);
+            registry.emplace<DamageHitComponent>(entity, shooter.damage);
             registry.emplace<Cooldown>(entity, 6.f);
         }
     });

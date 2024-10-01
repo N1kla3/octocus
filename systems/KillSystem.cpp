@@ -1,4 +1,5 @@
 #include "KillSystem.h"
+#include "Animation.h"
 #include "LifeComponents.h"
 #include "SpaceComponents.h"
 #include "WeaponComponent.h"
@@ -31,7 +32,7 @@ void KillSystem::update(entt::registry& registry, float delta, GameStatus& statu
     {
         health.points -= damage.points;
         damage.points = 0;
-        if (health.points < 0)
+        if (health.points <= 0)
         {
             registry.emplace<DeathComponent>(entity);
         }
@@ -40,7 +41,12 @@ void KillSystem::update(entt::registry& registry, float delta, GameStatus& statu
     bot_score.each([&registry, &status](auto entity) { status.score++; status.enemies_left--; } );
 
     auto player_dead = registry.view<DeathComponent, player>();
-    player_dead.each([&registry, &status](auto entity) { status.is_player_dead = true; } );
+    player_dead.each([&registry, &status](auto entity) 
+    { 
+        status.is_player_dead = true; 
+        auto ent = registry.create();
+        registry.emplace<TextAnimation>(ent);
+    });
 
     auto death_view = registry.view<DeathComponent>();
     death_view.each([&registry](auto entity) { registry.destroy(entity); } );

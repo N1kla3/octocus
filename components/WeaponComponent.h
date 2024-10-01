@@ -29,5 +29,6 @@ struct DeathComponent
 struct DamageHitComponent
 {
     float damage = 0.f;
+    bool aoe_hit = false;
     bool hit = false;
 };

@@ -48,12 +48,8 @@ void DrawSystem::updateui(entt::registry& registry, float delta, GameStatus stat
 {
     DrawText(TextFormat("Score: %i", status.score), 0.f, 0.f, 28.f, RED);
     DrawText(TextFormat("Enemies left: %i", status.enemies_left), 300.f, 0.f, 28.f, RED);
+    DrawText(TextFormat("Next wave: %1.2f", status.next_wave_timer), 580.f, 0.f, 28.f, RED);
 
-    if (status.is_player_dead)
-    {
-        //auto ent = registry.create();
-        //registry.emplace<TextAnimation>(ent);
-    }
 
     AnimationSystem::updateAnimation(registry, delta);
 }

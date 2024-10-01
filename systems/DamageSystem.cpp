@@ -16,12 +16,8 @@ void DamageSystem::updateDamage(entt::registry &registry)
             {
                 hit_damage->points += damage.damage;
                 damage.hit = true;
+                if (!damage.aoe_hit) return;
             }
-        }
-        if (!resolver.hit_entities.empty())
-        {
-            registry.emplace<DeathComponent>(entity);
-            damage.hit = true;
         }
     });
 }

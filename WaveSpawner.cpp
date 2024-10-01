@@ -2,19 +2,19 @@
 #include "game.h"
 #include <random>
 
-void WaveSpawner::addSpawnPoint(size_t count)
+void WaveSpawner::addSpawnPoint(size_t count, float delay)
 {
     int x, y;
     requestSpawnLocation(x, y);
-    m_SpawnPoints.emplace_back(x, y, count, 1.f);
+    m_SpawnPoints.emplace_back(x, y, count, delay);
     
     // TODO: Add animation of pre-spawn
 }
 
 void WaveSpawner::requestSpawnLocation(int& posx, int& posy)
 {
-    std::uniform_int_distribution<int> dist(0, m_Width); 
-    std::uniform_int_distribution<int> dist_y(0, m_Height); 
+    std::uniform_int_distribution<int> dist(0, m_Width - 30); 
+    std::uniform_int_distribution<int> dist_y(0, m_Height - 30); 
     posx = dist(m_RandomEngine);
     posy = dist_y(m_RandomEngine); 
 }
@@ -40,12 +40,13 @@ void WaveSpawner::spawnBunch(SpawnPoint& point)
 bool WaveSpawner::continueSpawnWave(size_t count)
 {
     m_EnemiesToSpawn -= count;
-    m_IsSpawning = m_EnemiesToSpawn >= 0;
-    if (m_IsSpawning)
+    bool spawn = m_EnemiesToSpawn >= 0;
+    if (spawn)
     {
-        addSpawnPoint(count);
+        m_SpawnPointDelay += 0.2f;
+        addSpawnPoint(count, m_SpawnPointDelay);
     }
-    return m_IsSpawning;
+    return spawn;
 }
 
 WaveSpawner::WaveSpawner(Game* parent, int height, int width)
@@ -58,9 +59,11 @@ WaveSpawner::WaveSpawner(Game* parent, int height, int width)
 
 void WaveSpawner::startWave()
 {
+    m_SpawnPointDelay = 1.f;
     if (m_WaveCounter < s_Waves.size())
     {
         m_EnemiesToSpawn = s_Waves[m_WaveCounter];
+        m_IsSpawning = true;
     }
     m_WaveCounter++;
     m_TimeSinceLastSpawn = 0.f;
@@ -88,5 +91,6 @@ void WaveSpawner::update(float delta)
             it++;
         }
     }
+    m_IsSpawning = !m_SpawnPoints.empty();
 }
 
