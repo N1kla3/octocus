@@ -21,3 +21,8 @@ struct border
         return r;
     }
 };
+
+struct border_collision
+{
+    Rectangle rect;
+};

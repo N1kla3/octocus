@@ -24,18 +24,18 @@ void DrawSystem::update(entt::registry& registry, float delta, GameStatus status
         player_render = render;
     }
 
+    auto view = registry.view<const position, const RenderComponent>(entt::exclude<player>);
+    view.each([](const position pos, const RenderComponent renderData) 
+    {
+        DrawCircleV(Vector2{pos.x, pos.y}, renderData.radius, renderData.color);
+    });
+
     auto border_view = registry.view<border>();
     for (const auto& [ent, border] : border_view.each())
     {
         DrawRectangleRec(border.getRect(), border.color);
     }
 
-    auto view = registry.view<const position, const RenderComponent>(entt::exclude<player>);
-
-    view.each([](const position pos, const RenderComponent renderData) 
-    {
-        DrawCircleV(Vector2{pos.x, pos.y}, renderData.radius, renderData.color);
-    });
     EndMode2D();
 
     DrawCircleV(Vector2{half_width, half_height}, player_render.radius, player_render.color);
