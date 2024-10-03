@@ -11,7 +11,7 @@ enum class RenderPriority : uint8_t
 
 struct RenderComponent
 {
-    Color color;
-    float radius;
-    RenderPriority priority;
+    Color color = RED;
+    float radius = 10.f;
+    RenderPriority priority = RenderPriority::LOW;
 };

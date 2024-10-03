@@ -14,11 +14,28 @@ enum class CollisionChannel
 struct position {
     float x;
     float y;
+    position(float x = 0.f, float y = 0.f)
+        : x(x), y(y){}
+    position(const Vector2 vec)
+    {
+        x = vec.x;
+        y = vec.y;
+    }
+    Vector2 toVector2() const { return Vector2{x, y}; }
 };
 
 struct velocity {
     float dx;
     float dy;
+
+    velocity(float x = 0.f, float y = 0.f)
+        : dx(x), dy(y){}
+    velocity(const Vector2 vec)
+    {
+        dx = vec.x;
+        dy = vec.y;
+    }
+    Vector2 toVector2() const { return Vector2{dx, dy}; }
 };
 
 struct sphere_collision

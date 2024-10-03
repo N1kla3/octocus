@@ -1,5 +1,6 @@
 #include "DrawSystem.h"
 #include "BorderComponent.h"
+#include "LifeComponents.h"
 #include "SpaceComponents.h"
 #include "AnimationSystem.h"
 #include "RenderComponent.h"
@@ -9,7 +10,7 @@
 
 void DrawSystem::update(entt::registry& registry, float delta, GameStatus status)
 {
-    RenderComponent player_render;
+    RenderComponent player_render{};
     float half_width = static_cast<float>(Game::m_ScreenWidth)/2;
     float half_height = static_cast<float>(Game::m_ScreenHeight)/2;
     auto camera_view = registry.view<const position, const cameraTarget, const RenderComponent>();
@@ -49,6 +50,12 @@ void DrawSystem::updateui(entt::registry& registry, float delta, GameStatus stat
     DrawText(TextFormat("Score: %i", status.score), 0.f, 0.f, 28.f, RED);
     DrawText(TextFormat("Enemies left: %i", status.enemies_left), 300.f, 0.f, 28.f, RED);
     DrawText(TextFormat("Next wave: %1.2f", status.next_wave_timer), 580.f, 0.f, 28.f, RED);
+
+    auto hp_view = registry.view<Health, player>();
+    hp_view.each([](Health hp, player)
+    {
+        DrawText(TextFormat("Health: %i / %i", hp.points, hp.max_points), 0.f, Game::m_ScreenHeight - 30.f, 28.f, RED);
+    });
 
 
     AnimationSystem::updateAnimation(registry, delta);

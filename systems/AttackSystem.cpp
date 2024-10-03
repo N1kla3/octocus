@@ -4,6 +4,7 @@
 #include "LifeComponents.h"
 #include "SpaceComponents.h"
 #include "entt/entity/fwd.hpp"
+#include "raymath.h"
 
 void AttackSystem::update(entt::registry& registry, float deltaTime)
 {
@@ -36,9 +37,11 @@ void AttackSystem::update(entt::registry& registry, float deltaTime)
         if (shooter.current_cooldown > shooter.cooldown)
         {
             shooter.current_cooldown = 0.f;
+            Vector2 direction = { shooter.target_x, shooter.target_y };
+            direction = Vector2Normalize(direction);
             auto entity = registry.create();
             registry.emplace<position>(entity, pos);
-            registry.emplace<velocity>(entity, shooter.target_x*4.f, shooter.target_y*4.f);
+            registry.emplace<velocity>(entity, Vector2Scale(direction, 160.f));
             registry.emplace<RenderComponent>(entity, GREEN, 3.f, RenderPriority::LOW);
             registry.emplace<sphere_collision>(entity, 3.f, CollisionChannel::WEAPON, channel);
             registry.emplace<collision_resolver>(entity);

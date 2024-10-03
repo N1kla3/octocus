@@ -23,6 +23,7 @@ void WaveSpawner::spawnBunch(SpawnPoint& point)
 {
     std::poisson_distribution<int> dist(16); 
     std::poisson_distribution<int> dist_y(16); 
+    std::uniform_int_distribution<int> type_randomizer(0,1);
     for (size_t i = 0; i < point.amount_to_spawn; i++)
     {
         SpawnParam params{};
@@ -31,8 +32,15 @@ void WaveSpawner::spawnBunch(SpawnPoint& point)
         params.size = 10.f;
         params.damage = 10.f;
         params.health = 20;
-        // TODO: melee range
-        m_Parent->spawnMelee(params);
+
+        if (type_randomizer(m_RandomEngine))
+        {
+            m_Parent->spawnMelee(params);
+        }
+        else
+        {
+            m_Parent->spawnRange(params);
+        }
     }
     m_TimeSinceLastSpawn = 0.f;
 }

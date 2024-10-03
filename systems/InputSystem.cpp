@@ -36,8 +36,8 @@ void InputSystem::update(entt::registry& registry, float delta)
         vel.dx /= len;
         vel.dy /= len;
     }
-    vel.dx *= 3.f;
-    vel.dy *= 3.f;
+    vel.dx *= 140.f;
+    vel.dy *= 140.f;
 
     if (IsKeyDown(KEY_SPACE))
     {

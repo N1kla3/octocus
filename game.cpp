@@ -1,4 +1,6 @@
 #include "game.h"
+#include "AiComponents.h"
+#include "AiSystem.h"
 #include "BorderComponent.h"
 #include "CollisionSystem.h"
 #include "raylib.h"
@@ -73,6 +75,7 @@ void Game::spawnMelee(const SpawnParam& param)
     m_Registry.emplace<WeaponComponent>(entity, param.damage, 10.f, 2.f);
     m_Registry.emplace<Damage>(entity);
     m_Registry.emplace<bot>(entity);
+    m_Registry.emplace<MeleeAi>(entity);
     m_Status.enemies_left++;
     //std::cout << "spawned melee at pos" << param.posx << " " << param.posy << std::endl;
 }
@@ -85,9 +88,10 @@ void Game::spawnRange(const SpawnParam& param)
     m_Registry.emplace<velocity>(entity, 0.f, 0.f);
     m_Registry.emplace<sphere_collision>(entity, param.size, CollisionChannel::BOT);
     m_Registry.emplace<RenderComponent>(entity, BLUE, param.size, RenderPriority::MIDLE);
-    m_Registry.emplace<ShootComponent>(entity, param.damage, 10.f, 2.f);
+    m_Registry.emplace<ShootComponent>(entity, param.damage, 1.4f);
     m_Registry.emplace<Damage>(entity);
     m_Registry.emplace<bot>(entity);
+    m_Registry.emplace<RangeAi>(entity);
     m_Status.enemies_left++;
 }
 
@@ -113,6 +117,7 @@ void Game::updateGameplay(float delta)
     if (!m_Status.is_player_dead)
     {
         InputSystem::update(m_Registry, delta);
+        AiSystem::updateAi(m_Registry, delta);
         MovementSystem::update(m_Registry, delta);
         CollisionSystem::update(m_Registry);
         AttackSystem::update(m_Registry, delta);
