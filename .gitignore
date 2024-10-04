@@ -6,3 +6,5 @@
 /RelBuild/
 compile_commands.json
 /.cache/
+
+cmake-build-release/
