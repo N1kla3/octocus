@@ -36,8 +36,8 @@ void InputSystem::update(entt::registry& registry, float delta)
         vel.dx /= len;
         vel.dy /= len;
     }
-    vel.dx *= 140.f;
-    vel.dy *= 140.f;
+    vel.dx *= 160.f;
+    vel.dy *= 160.f;
 
     if (IsKeyDown(KEY_SPACE))
     {
@@ -61,6 +61,7 @@ void InputSystem::update(entt::registry& registry, float delta)
         Vector2 res = Vector2Normalize({mousex - static_cast<float>(Game::m_ScreenWidth)/2, mousey - static_cast<float>(Game::m_ScreenHeight)/2 });
         shoot.target_x = res.x;
         shoot.target_y = res.y;
+        shoot.attack = true;
         weap.attack = request_attack;
     });
 }

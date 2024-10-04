@@ -1,6 +1,5 @@
 #pragma once
 
-
 struct GameStatus
 {
     bool is_player_dead = false;

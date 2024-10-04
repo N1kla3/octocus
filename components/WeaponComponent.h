@@ -2,9 +2,9 @@
 
 struct WeaponComponent
 {
-    float damage;
-    float range;
-    float attack_cooldown_duration;
+    float damage = 10.f;
+    float range = 10.f;
+    float attack_cooldown_duration = 1.f;
     float cooldown = 0.f;
 
     bool attack = false;
@@ -12,8 +12,8 @@ struct WeaponComponent
 
 struct ShootComponent
 {
-    float damage;
-    float cooldown;
+    float damage = 10.f;
+    float cooldown = 1.f;
     float current_cooldown = 0.f;
     float target_x = 0.f;
     float target_y = 0.f;

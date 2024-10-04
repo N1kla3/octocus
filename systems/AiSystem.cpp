@@ -18,6 +18,7 @@ void AiSystem::updateAi(entt::registry &registry, float delta)
         Vector2 my_pos = pos.toVector2();
         float distance = Vector2Distance(my_pos, player_pos);
 
+        shoot.attack = false;
         if (distance < range.shoot_distance)
         {
             if (distance < range.safe_distance)
@@ -50,13 +51,33 @@ void AiSystem::updateAi(entt::registry &registry, float delta)
         {
             Vector2 direction = Vector2Normalize(Vector2Subtract(player_pos, my_pos));
             vel = velocity(Vector2Scale(direction, range.speed));
-            shoot.attack = false;
         }
     });
 
     auto melee_v = registry.view<MeleeAi, bot, position, WeaponComponent, velocity>();
     melee_v.each([player_pos](MeleeAi& mel, bot, position& pos, WeaponComponent& weap, velocity& vel)
     {
+        Vector2 my_pos = pos.toVector2();
+        float distance = Vector2Distance(my_pos, player_pos);
 
+        Vector2 direction = Vector2Normalize(Vector2Subtract(player_pos, my_pos));
+
+        if (distance < mel.attack_distance)
+        {
+            weap.attack = true;
+        }
+        else
+        {
+            weap.attack = false;
+        }
+
+        if (distance < mel.haste_distance)
+        {
+            vel = velocity(Vector2Scale(direction, mel.speed + 20.f));
+        }
+        else
+        {
+            vel = velocity(Vector2Scale(direction, mel.speed));
+        }
     });
 }

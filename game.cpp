@@ -71,13 +71,12 @@ void Game::spawnMelee(const SpawnParam& param)
     m_Registry.emplace<position>(entity, param.posx, param.posy);
     m_Registry.emplace<velocity>(entity, 0.f, 0.f);
     m_Registry.emplace<sphere_collision>(entity, param.size, CollisionChannel::BOT);
-    m_Registry.emplace<RenderComponent>(entity, BLUE, param.size, RenderPriority::MIDLE);
-    m_Registry.emplace<WeaponComponent>(entity, param.damage, 10.f, 2.f);
+    m_Registry.emplace<RenderComponent>(entity, PURPLE, param.size, RenderPriority::MIDLE);
+    m_Registry.emplace<WeaponComponent>(entity, param.damage, 10.f, 1.f);
     m_Registry.emplace<Damage>(entity);
     m_Registry.emplace<bot>(entity);
     m_Registry.emplace<MeleeAi>(entity);
     m_Status.enemies_left++;
-    //std::cout << "spawned melee at pos" << param.posx << " " << param.posy << std::endl;
 }
 
 void Game::spawnRange(const SpawnParam& param)
@@ -145,8 +144,8 @@ void Game::createPlayer()
     m_Registry.emplace<Health>(entity, 100, 100);
     m_Registry.emplace<position>(entity, 20.f, 20.f);
     m_Registry.emplace<velocity>(entity, 0.f, 0.f);
-    m_Registry.emplace<WeaponComponent>(entity, 44410.f, 15.f, 1.3f);
-    m_Registry.emplace<ShootComponent>(entity, 55510.f, 0.5f, 0.0f);
+    m_Registry.emplace<WeaponComponent>(entity, 60.f, 15.f, 1.3f);
+    m_Registry.emplace<ShootComponent>(entity, 40.f, 0.3f, 0.0f);
     m_Registry.emplace<sphere_collision>(entity, 10.f, CollisionChannel::PLAYER);
     m_Registry.emplace<collision_resolver>(entity);
     m_Registry.emplace<Damage>(entity);

@@ -11,7 +11,7 @@ struct border
 
     Color color;
 
-    Rectangle getRect() const 
+    [[nodiscard]] Rectangle getRect() const
     {
         Rectangle r;
         r.x = std::min(LeftDownBound.x, RightUpperBound.x);
