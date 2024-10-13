@@ -8,6 +8,7 @@ set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE) # don't build the supplied examples
 
 add_subdirectory(raylib)
 add_subdirectory(entt)
+add_subdirectory(GameNetworkingSockets)
 
 include_directories(components)
 include_directories(systems)
@@ -42,4 +43,4 @@ add_executable(${PROJECT_NAME} main.cpp
         game.h game.cpp
         WaveSpawner.h WaveSpawner.cpp)
 
-target_link_libraries(${PROJECT_NAME} raylib EnTT::EnTT "-static-libgcc -static-libstdc++")
+target_link_libraries(${PROJECT_NAME} raylib EnTT::EnTT GameNetworkingSockets "-static-libgcc -static-libstdc++")
