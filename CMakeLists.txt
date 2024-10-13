@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE) # don't build the supplied examples
+option(BUILD_SHARED_LIBS OFF)
+option(ENABLE_ICE OFF)
 
 add_subdirectory(raylib)
 add_subdirectory(entt)
@@ -43,4 +45,4 @@ add_executable(${PROJECT_NAME} main.cpp
         game.h game.cpp
         WaveSpawner.h WaveSpawner.cpp)
 
-target_link_libraries(${PROJECT_NAME} raylib EnTT::EnTT GameNetworkingSockets "-static-libgcc -static-libstdc++")
+target_link_libraries(${PROJECT_NAME} raylib EnTT::EnTT GameNetworkingSockets::static "-static-libgcc -static-libstdc++")
