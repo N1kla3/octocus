@@ -28,6 +28,8 @@ add_executable(${PROJECT_NAME} main.cpp
         components/StatusComponents.h
         components/Animation.h
         components/BorderComponent.h
+        networking/Serialization.h
+        networking/Serialization.cpp
         systems/DamageSystem.cpp
         systems/DamageSystem.h
         systems/InputSystem.h
