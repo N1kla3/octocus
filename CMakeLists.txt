@@ -7,9 +7,13 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE) # don't build the supplied examples
 option(BUILD_SHARED_LIBS OFF)
 option(ENABLE_ICE OFF)
+option(OPENSSL_USE_STATIC_LIBS ON)
+option(Protobuf_USE_STATIC_LIBS ON)
 
 add_subdirectory(raylib)
 add_subdirectory(entt)
+#cmake_policy(set CMP0074 NEW)
+set(CMAKE_POLICY_DEFAULT_CMP0074 NEW)
 add_subdirectory(GameNetworkingSockets)
 
 include_directories(components)
