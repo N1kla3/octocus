@@ -30,6 +30,7 @@ add_executable(${PROJECT_NAME} main.cpp
         components/BorderComponent.h
         networking/Serialization.h
         networking/Serialization.cpp
+        networking/ByteSwapper.h
         systems/DamageSystem.cpp
         systems/DamageSystem.h
         systems/InputSystem.h
