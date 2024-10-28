@@ -43,4 +43,46 @@ namespace oct
             To destination;
         };
     };
+
+    template< typename T, size_t Size>
+    class ByteSwapper;
+
+    template< typename T >
+    class ByteSwapper<T, 2>
+    {
+    public:
+        T swap(T inData) const
+        {
+            uint16_t result = byteSwap2(TypeAlliaser<T, uint16_t>(inData).get());
+            return TypeAlliaser<uint16_t, T>(result).get();
+        }
+    };
+
+    template< typename T >
+    class ByteSwapper<T, 4>
+    {
+    public:
+        T swap(T inData) const
+        {
+            uint32_t result = byteSwap4(TypeAlliaser<T, uint32_t>(inData).get());
+            return TypeAlliaser<uint32_t, T>(result).get();
+        }
+    };
+
+    template< typename T >
+    class ByteSwapper<T, 8>
+    {
+    public:
+        T swap(T inData) const
+        {
+            uint64_t result = byteSwap8(TypeAlliaser<T, uint64_t>(inData).get());
+            return TypeAlliaser<uint64_t, T>(result).get();
+        }
+    };
+
+    template< typename T >
+    T byteSwap(T inData)
+    {
+        return ByteSwapper<T, sizeof(T)>().swap(inData);
+    }
 }
