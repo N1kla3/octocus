@@ -47,6 +47,7 @@ void AiSystem::updateAi(entt::registry &registry, float delta)
             shoot.attack = true;
 
         }
+
         else
         {
             Vector2 direction = Vector2Normalize(Vector2Subtract(player_pos, my_pos));
