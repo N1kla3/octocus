@@ -1,6 +1,11 @@
 #pragma once
+#include "ByteSwapper.h"
+#include <bit>
 #include <cstddef>
+#include <memory>
+#include <type_traits>
 #include <utility>
+#include <vector>
 
 class Buffer
 {
@@ -11,7 +16,7 @@ public:
     Buffer(const Buffer& rhs);
     Buffer(Buffer&& rhs) noexcept;
     Buffer& operator=(Buffer rhs);
-    friend void swap(Buffer& lhs, Buffer& rhs)
+    friend void swap(Buffer& lhs, Buffer& rhs) noexcept
     {
         using std::swap;
 
@@ -33,37 +38,93 @@ private:
     void realloc(size_t newSize);
 };
 
-class MemoryStream
+template< typename T >
+concept NumberType = std::is_arithmetic<T>::value || std::is_enum<T>::value;
+
+template< typename T>
+class BufferStream
 {
 public:
-    virtual void serialize(void* data, size_t size) = 0;
-    void* getBuffer() const;
-    size_t getCapacity() const;
-    virtual ~MemoryStream(){}
+    template< typename U>
+    void serialize(U& data)
+    {
+        static_cast<T*>(this)->serialize_impl(data);
+    }
 
+private:
+    BufferStream() = delete;
+    explicit BufferStream(std::unique_ptr<Buffer>&& buffer)
+            : m_Buffer(std::move(buffer))
+    {
+    }
 protected:
-    char* m_Buffer = nullptr;
-    size_t m_Current = 0;
-    size_t m_Capacity = 255;
+    std::unique_ptr<Buffer> m_Buffer;
 };
 
-class InputMemoryStream : public MemoryStream
+class ReadStream : public BufferStream<ReadStream>
 {
 public:
-    InputMemoryStream(void* buffer, size_t size);
-    virtual void serialize(void* data, size_t size) override;
-    virtual ~InputMemoryStream();
+    friend class BufferStream<ReadStream>;
+
+    template< typename T >
+    void serialize_impl(T& data)
+    {
+        write(data, sizeof(T));
+    }
+    template< typename T >
+    void serialize_impl(std::vector<T>& data)
+    {
+        write(data.size(), sizeof(size_t));
+
+        for (const T& val : data)
+        {
+            write(val, sizeof(T));
+        }
+    }
 
 private:
-    void read(void* data, size_t size);
+    template< NumberType T >
+    void write(T& data, size_t size)
+    {
+        if constexpr (std::endian::native == std::endian::big)
+        {
+            data = oct::byteSwap(data);
+        }
+        m_Buffer->write(data, size);
+    }
 };
 
-class OutputMemoryStream : public MemoryStream
+class WriteStream : public BufferStream<WriteStream>
 {
-    explicit OutputMemoryStream(size_t size);
-    virtual void serialize(void* data, size_t size) override;
-    virtual ~OutputMemoryStream();
+public:
+    friend class BufferStream<WriteStream>;
+
+    template< typename T >
+    void serialize_impl(T& data)
+    {
+        read(data, sizeof(T));
+    }
+    template< typename T >
+    void serialize_impl(std::vector<T>& data)
+    {
+        size_t size;
+        read(size, sizeof(size_t));
+        data.resize(size);
+        for (size_t index = 0; index < size; index++)
+        {
+            read(data[index], sizeof(T));
+        }
+    }
 
 private:
-    void write(void* data, size_t size);
+    template< NumberType T >
+    void read(T& data, size_t size)
+    {
+        m_Buffer->read(data, size);
+        if constexpr (std::endian::native == std::endian::big)
+        {
+            data = oct::byteSwap(data);
+        }
+    }
 };
+
