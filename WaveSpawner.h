@@ -11,7 +11,8 @@ class WaveSpawner
         float time_left_to_spawn;
     };
 
-    inline static std::array<int, 12> s_Waves = { 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240 };
+    inline static std::array<int, 12> s_Waves = {20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240};
+
 private:
     void addSpawnPoint(size_t count, float delay);
     void requestSpawnLocation(int& posx, int& posy);
@@ -36,7 +37,12 @@ public:
     WaveSpawner(Game* parent, int height, int width);
     void startWave();
     void update(float delta);
-    bool isCurrentlySpawning() const { return m_IsSpawning; }
-    float getTimeSinceLastSpawn() const { return m_TimeSinceLastSpawn; }
+    bool isCurrentlySpawning() const
+    {
+        return m_IsSpawning;
+    }
+    float getTimeSinceLastSpawn() const
+    {
+        return m_TimeSinceLastSpawn;
+    }
 };
-

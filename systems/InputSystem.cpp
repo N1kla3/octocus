@@ -1,8 +1,8 @@
 #include "InputSystem.h"
 #include <cmath>
 #include "../game.h"
-#include "WeaponComponent.h"
 #include "SpaceComponents.h"
+#include "WeaponComponent.h"
 #include "raylib.h"
 #include "raymath.h"
 
@@ -44,24 +44,23 @@ void InputSystem::update(entt::registry& registry, float delta)
         request_attack = true;
     }
 
-    view.each([vel](velocity& veloc, player pl) 
-    {
-        veloc = vel;
-    });
+    view.each([vel](velocity& veloc, player pl) { veloc = vel; });
 
-    auto weapon_view = registry.view<WeaponComponent, ShootComponent, position, player>(); 
+    auto weapon_view = registry.view<WeaponComponent, ShootComponent, position, player>();
 
 
     float mousex = static_cast<float>(GetMouseX());
     float mousey = static_cast<float>(GetMouseY());
 
 
-    weapon_view.each([mousex, mousey, request_attack](WeaponComponent& weap, ShootComponent& shoot, position pos, player pl)
-    {
-        Vector2 res = Vector2Normalize({mousex - static_cast<float>(Game::m_ScreenWidth)/2, mousey - static_cast<float>(Game::m_ScreenHeight)/2 });
-        shoot.target_x = res.x;
-        shoot.target_y = res.y;
-        shoot.attack = true;
-        weap.attack = request_attack;
-    });
+    weapon_view.each(
+            [mousex, mousey, request_attack](WeaponComponent& weap, ShootComponent& shoot, position pos, player pl)
+            {
+                Vector2 res = Vector2Normalize({mousex - static_cast<float>(Game::m_ScreenWidth) / 2,
+                                                mousey - static_cast<float>(Game::m_ScreenHeight) / 2});
+                shoot.target_x = res.x;
+                shoot.target_y = res.y;
+                shoot.attack = true;
+                weap.attack = request_attack;
+            });
 }

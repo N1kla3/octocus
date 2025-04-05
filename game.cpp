@@ -1,27 +1,26 @@
 #include "game.h"
+#include <chrono>
 #include "AiComponents.h"
 #include "AiSystem.h"
+#include "AttackSystem.h"
 #include "BorderComponent.h"
 #include "CollisionSystem.h"
-#include "raylib.h"
+#include "DamageSystem.h"
+#include "DrawSystem.h"
+#include "InputSystem.h"
+#include "KillSystem.h"
+#include "LifeComponents.h"
+#include "MovementSystem.h"
+#include "RenderComponent.h"
 #include "SpaceComponents.h"
 #include "StatusComponents.h"
-#include "RenderComponent.h"
-#include "DamageSystem.h"
-#include "KillSystem.h"
-#include "AttackSystem.h"
-#include "LifeComponents.h"
 #include "WeaponComponent.h"
-#include "DrawSystem.h"
-#include "MovementSystem.h"
-#include "InputSystem.h"
-#include <chrono>
+#include "raylib.h"
 
 Game::Game()
     : m_Spawner(this, m_ScreenHeight, m_ScreenWidth)
     , m_Registry()
 {
-    
 }
 
 void Game::init()
@@ -37,13 +36,13 @@ void Game::init()
 
 void Game::run()
 {
-    using namespace std::chrono;
-    auto begin = steady_clock::now();
+    namespace sc = std::chrono;
+    auto begin = sc::steady_clock::now();
 
     while (!WindowShouldClose())
     {
-        const auto current = steady_clock::now();
-        float duration = std::chrono::duration<float>{current - begin}.count();
+        const auto current = sc::steady_clock::now();
+        float duration = sc::duration<float>{current - begin}.count();
 
         update(duration);
 
@@ -155,21 +154,25 @@ void Game::createPlayer()
 void Game::spawnBorders()
 {
     auto left = m_Registry.create();
-    m_Registry.emplace<border>(left, Vector2{ 0.f - 1000.f, 0.f - 2 * m_ScreenHeight }, Vector2{ 0.f, 0.f + 2 * m_ScreenHeight }, BROWN);
+    m_Registry.emplace<border>(
+            left, Vector2{0.f - 1000.f, 0.f - 2 * m_ScreenHeight}, Vector2{0.f, 0.f + 2 * m_ScreenHeight}, BROWN);
 
     auto right = m_Registry.create();
-    m_Registry.emplace<border>(right, Vector2{ m_ScreenWidth, m_ScreenHeight + 1000.f }, Vector2{ m_ScreenWidth + 1000.f, 0.f - 1000.f }, BROWN);
+    m_Registry.emplace<border>(right,
+                               Vector2{m_ScreenWidth, m_ScreenHeight + 1000.f},
+                               Vector2{m_ScreenWidth + 1000.f, 0.f - 1000.f},
+                               BROWN);
 
     auto top = m_Registry.create();
-    m_Registry.emplace<border>(top, Vector2{ 0.f, 0.f }, Vector2{ m_ScreenWidth, -m_ScreenHeight }, BROWN);
+    m_Registry.emplace<border>(top, Vector2{0.f, 0.f}, Vector2{m_ScreenWidth, -m_ScreenHeight}, BROWN);
 
     auto bottom = m_Registry.create();
-    m_Registry.emplace<border>(bottom, Vector2{ 0.f, 0.f + 2 * m_ScreenHeight }, Vector2{ m_ScreenWidth, m_ScreenHeight }, BROWN);
+    m_Registry.emplace<border>(
+            bottom, Vector2{0.f, 0.f + 2 * m_ScreenHeight}, Vector2{m_ScreenWidth, m_ScreenHeight}, BROWN);
 
-    Rectangle&& rect{};
+    Rectangle rect{};
     rect.x = 0.f;
     rect.y = 0.f;
     rect.width = m_ScreenWidth;
     rect.height = m_ScreenHeight;
 }
-

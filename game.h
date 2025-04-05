@@ -1,7 +1,7 @@
-#pragma once 
+#pragma once
 #include "StatusComponents.h"
-#include "entt/entt.hpp"
 #include "WaveSpawner.h"
+#include "entt/entt.hpp"
 
 struct SpawnParam
 {
@@ -30,6 +30,7 @@ public:
     void spawnRange(const SpawnParam& param);
     inline static const int m_ScreenWidth = 800;
     inline static const int m_ScreenHeight = 450;
+
 private:
     WaveSpawner m_Spawner;
     entt::registry m_Registry;

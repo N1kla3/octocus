@@ -1,29 +1,29 @@
 #include "WaveSpawner.h"
-#include "game.h"
 #include <random>
+#include "game.h"
 
 void WaveSpawner::addSpawnPoint(size_t count, float delay)
 {
     int x, y;
     requestSpawnLocation(x, y);
     m_SpawnPoints.emplace_back(x, y, count, delay);
-    
+
     // TODO: Add animation of pre-spawn
 }
 
 void WaveSpawner::requestSpawnLocation(int& posx, int& posy)
 {
-    std::uniform_int_distribution<int> dist(0, m_Width - 30); 
-    std::uniform_int_distribution<int> dist_y(0, m_Height - 30); 
+    std::uniform_int_distribution<int> dist(0, m_Width - 30);
+    std::uniform_int_distribution<int> dist_y(0, m_Height - 30);
     posx = dist(m_RandomEngine);
-    posy = dist_y(m_RandomEngine); 
+    posy = dist_y(m_RandomEngine);
 }
 
 void WaveSpawner::spawnBunch(SpawnPoint& point)
 {
-    std::poisson_distribution<int> dist(16); 
-    std::poisson_distribution<int> dist_y(16); 
-    std::uniform_int_distribution<int> type_randomizer(0,1);
+    std::poisson_distribution<int> dist(16);
+    std::poisson_distribution<int> dist_y(16);
+    std::uniform_int_distribution<int> type_randomizer(0, 1);
     for (size_t i = 0; i < point.amount_to_spawn; i++)
     {
         SpawnParam params{};
@@ -86,7 +86,7 @@ void WaveSpawner::update(float delta)
         return;
     }
 
-    for (auto it = m_SpawnPoints.begin(); it != m_SpawnPoints.end(); )
+    for (auto it = m_SpawnPoints.begin(); it != m_SpawnPoints.end();)
     {
         it->time_left_to_spawn -= delta;
         if (it->time_left_to_spawn <= 0.f)
@@ -101,4 +101,3 @@ void WaveSpawner::update(float delta)
     }
     m_IsSpawning = !m_SpawnPoints.empty();
 }
-

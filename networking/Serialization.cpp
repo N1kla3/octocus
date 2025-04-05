@@ -1,7 +1,7 @@
 #include "Serialization.h"
-#include "ByteSwapper.h"
 #include <cstdlib>
 #include <cstring>
+#include "ByteSwapper.h"
 
 Buffer::Buffer(size_t size)
 {
@@ -22,7 +22,7 @@ Buffer::~Buffer()
 
 Buffer::Buffer(const Buffer& rhs)
 {
-    m_Buffer = reinterpret_cast<char*>(std::malloc(rhs.m_MaxSize));
+    m_Buffer = static_cast<char*>(std::malloc(rhs.m_MaxSize));
 
     if (!m_Buffer)
     {
@@ -86,4 +86,3 @@ void Buffer::realloc(size_t newSize)
         throw "cant realloc buffer";
     }
 }
-

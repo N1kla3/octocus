@@ -1,6 +1,6 @@
 #pragma once
-#include "entt/entt.hpp"
 #include "StatusComponents.h"
+#include "entt/entt.hpp"
 
 class KillSystem
 {

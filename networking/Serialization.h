@@ -1,11 +1,11 @@
 #pragma once
-#include "ByteSwapper.h"
 #include <bit>
 #include <cstddef>
 #include <memory>
 #include <type_traits>
 #include <utility>
 #include <vector>
+#include "ByteSwapper.h"
 
 class Buffer
 {
@@ -38,14 +38,14 @@ private:
     void realloc(size_t newSize);
 };
 
-template< typename T >
+template<typename T>
 concept NumberType = std::is_arithmetic<T>::value || std::is_enum<T>::value;
 
-template< typename T>
+template<typename T>
 class BufferStream
 {
 public:
-    template< typename U>
+    template<typename U>
     void serialize(U& data)
     {
         static_cast<T*>(this)->serialize_impl(data);
@@ -54,9 +54,10 @@ public:
 private:
     BufferStream() = delete;
     explicit BufferStream(std::unique_ptr<Buffer>&& buffer)
-            : m_Buffer(std::move(buffer))
+        : m_Buffer(std::move(buffer))
     {
     }
+
 protected:
     std::unique_ptr<Buffer> m_Buffer;
 };
@@ -66,24 +67,24 @@ class ReadStream : public BufferStream<ReadStream>
 public:
     friend class BufferStream<ReadStream>;
 
-    template< typename T >
+    template<typename T>
     void serialize_impl(T& data)
     {
         write(data, sizeof(T));
     }
-    template< typename T >
+    template<typename T>
     void serialize_impl(std::vector<T>& data)
     {
         write(data.size(), sizeof(size_t));
 
-        for (const T& val : data)
+        for (const T& val: data)
         {
             write(val, sizeof(T));
         }
     }
 
 private:
-    template< NumberType T >
+    template<NumberType T>
     void write(T& data, size_t size)
     {
         if constexpr (std::endian::native == std::endian::big)
@@ -99,12 +100,12 @@ class WriteStream : public BufferStream<WriteStream>
 public:
     friend class BufferStream<WriteStream>;
 
-    template< typename T >
+    template<typename T>
     void serialize_impl(T& data)
     {
         read(data, sizeof(T));
     }
-    template< typename T >
+    template<typename T>
     void serialize_impl(std::vector<T>& data)
     {
         size_t size;
@@ -117,7 +118,7 @@ public:
     }
 
 private:
-    template< NumberType T >
+    template<NumberType T>
     void read(T& data, size_t size)
     {
         m_Buffer->read(data, size);
@@ -127,4 +128,3 @@ private:
         }
     }
 };
-

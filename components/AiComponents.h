@@ -20,4 +20,3 @@ struct MeleeAi
     float attack_distance = 30.f;
     float haste_distance = 110.f;
 };
-

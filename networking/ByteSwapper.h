@@ -10,33 +10,32 @@ namespace oct
 
     inline uint32_t byteSwap4(uint32_t inData)
     {
-        return  ((inData >> 24) & 0x000000ff) |
-                ((inData >> 8)  & 0x0000ff00) |
-                ((inData << 8)  & 0x00ff0000) |
-                ((inData << 24) & 0xff000000);
+        return ((inData >> 24) & 0x000000ff) | ((inData >> 8) & 0x0000ff00) | ((inData << 8) & 0x00ff0000) |
+               ((inData << 24) & 0xff000000);
     }
 
     inline uint64_t byteSwap8(uint64_t inData)
     {
-        return  ((inData >> 56) & 0x00000000000000ff) |
-                ((inData >> 40) & 0x000000000000ff00) |
-                ((inData >> 24) & 0x0000000000ff0000) |
-                ((inData >> 8)  & 0x00000000ff000000) |
-                ((inData << 8)  & 0x000000ff00000000) |
-                ((inData << 24) & 0x0000ff0000000000) |
-                ((inData << 40) & 0x00ff000000000000) |
-                ((inData << 56) & 0xff00000000000000);
+        return ((inData >> 56) & 0x00000000000000ff) | ((inData >> 40) & 0x000000000000ff00) |
+               ((inData >> 24) & 0x0000000000ff0000) | ((inData >> 8) & 0x00000000ff000000) |
+               ((inData << 8) & 0x000000ff00000000) | ((inData << 24) & 0x0000ff0000000000) |
+               ((inData << 40) & 0x00ff000000000000) | ((inData << 56) & 0xff00000000000000);
     }
 
-    template< typename From, typename To >
+    template<typename From, typename To>
     class TypeAlliaser
     {
     public:
         explicit TypeAlliaser(From fromValue)
-            : source(fromValue){}
+            : source(fromValue)
+        {
+        }
 
-        To& get() { return destination; }
-        
+        To& get()
+        {
+            return destination;
+        }
+
         union
         {
             From source;
@@ -44,10 +43,10 @@ namespace oct
         };
     };
 
-    template< typename T, size_t Size>
+    template<typename T, size_t Size>
     class ByteSwapper;
 
-    template< typename T >
+    template<typename T>
     class ByteSwapper<T, 2>
     {
     public:
@@ -58,7 +57,7 @@ namespace oct
         }
     };
 
-    template< typename T >
+    template<typename T>
     class ByteSwapper<T, 4>
     {
     public:
@@ -69,7 +68,7 @@ namespace oct
         }
     };
 
-    template< typename T >
+    template<typename T>
     class ByteSwapper<T, 8>
     {
     public:
@@ -80,9 +79,9 @@ namespace oct
         }
     };
 
-    template< typename T >
+    template<typename T>
     T byteSwap(T inData)
     {
         return ByteSwapper<T, sizeof(T)>().swap(inData);
     }
-}
+} // namespace oct

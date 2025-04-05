@@ -1,8 +1,8 @@
 #pragma once
-#include "raylib.h"
-#include "raymath.h"
 #include <algorithm>
 #include <cstdlib>
+#include "raylib.h"
+#include "raymath.h"
 
 struct border
 {

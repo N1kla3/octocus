@@ -23,7 +23,6 @@ struct ShootComponent
 
 struct DeathComponent
 {
-
 };
 
 struct DamageHitComponent
