@@ -8,35 +8,35 @@
 
 void AiSystem::updateAi(entt::registry& registry, float delta)
 {
-    auto player_v = registry.view<position, player>();
+    const auto player_v = registry.view<Position, Player>();
     Vector2 player_pos;
     player_v.each(
-            [&player_pos](position pos, player)
+            [&player_pos](Position pos, Player)
             {
                 player_pos.x = pos.x;
                 player_pos.y = pos.y;
             });
 
-    auto range_v = registry.view<RangeAi, bot, position, ShootComponent, velocity>();
+    auto range_v = registry.view<RangeAi, Bot, Position, ShootComponent, Velocity>();
     range_v.each(
-            [delta, player_pos](RangeAi& range, bot, position& pos, ShootComponent& shoot, velocity& vel)
+            [delta, player_pos](RangeAi& range, Bot, const Position& pos, ShootComponent& shoot, Velocity& vel)
             {
-                Vector2 my_pos = pos.toVector2();
-                float distance = Vector2Distance(my_pos, player_pos);
+                Vector2 const my_pos = pos.toVector2();
+                float const distance = Vector2Distance(my_pos, player_pos);
 
                 shoot.attack = false;
                 if (distance < range.shoot_distance)
                 {
                     if (distance < range.safe_distance)
                     {
-                        Vector2 direction = Vector2Normalize(Vector2Subtract(my_pos, player_pos));
-                        vel = velocity(Vector2Scale(direction, range.speed));
+                        Vector2 const direction = Vector2Normalize(Vector2Subtract(my_pos, player_pos));
+                        vel = Velocity(Vector2Scale(direction, range.speed));
                     }
                     else
                     {
                         if (range.curr_strafe_duration > range.strafe_duration)
                         {
-                            int value = GetRandomValue(1, 2);
+                            int const value = GetRandomValue(1, 2);
                             range.strafe_angle = value == 1 ? 90 : -90;
                             range.curr_strafe_duration = 0;
                         }
@@ -44,7 +44,7 @@ void AiSystem::updateAi(entt::registry& registry, float delta)
                         {
                             Vector2 direction = Vector2Normalize(Vector2Subtract(player_pos, my_pos));
                             direction = Vector2Rotate(direction, range.strafe_angle);
-                            vel = velocity(Vector2Scale(direction, range.speed));
+                            vel = Velocity(Vector2Scale(direction, range.speed));
                             range.curr_strafe_duration += delta;
                         }
                     }
@@ -55,36 +55,29 @@ void AiSystem::updateAi(entt::registry& registry, float delta)
 
                 else
                 {
-                    Vector2 direction = Vector2Normalize(Vector2Subtract(player_pos, my_pos));
-                    vel = velocity(Vector2Scale(direction, range.speed));
+                    Vector2 const direction = Vector2Normalize(Vector2Subtract(player_pos, my_pos));
+                    vel = Velocity(Vector2Scale(direction, range.speed));
                 }
             });
 
-    auto melee_v = registry.view<MeleeAi, bot, position, WeaponComponent, velocity>();
+    auto melee_v = registry.view<MeleeAi, Bot, Position, WeaponComponent, Velocity>();
     melee_v.each(
-            [player_pos](MeleeAi& mel, bot, position& pos, WeaponComponent& weap, velocity& vel)
+            [player_pos](const MeleeAi& mel, Bot, const Position& pos, WeaponComponent& weap, Velocity& vel)
             {
-                Vector2 my_pos = pos.toVector2();
-                float distance = Vector2Distance(my_pos, player_pos);
+                Vector2 const my_pos = pos.toVector2();
+                float const distance = Vector2Distance(my_pos, player_pos);
 
-                Vector2 direction = Vector2Normalize(Vector2Subtract(player_pos, my_pos));
+                Vector2 const direction = Vector2Normalize(Vector2Subtract(player_pos, my_pos));
 
-                if (distance < mel.attack_distance)
-                {
-                    weap.attack = true;
-                }
-                else
-                {
-                    weap.attack = false;
-                }
+                weap.attack = distance < mel.attack_distance;
 
                 if (distance < mel.haste_distance)
                 {
-                    vel = velocity(Vector2Scale(direction, mel.speed + 20.f));
+                    vel = Velocity(Vector2Scale(direction, mel.speed + 20.f));
                 }
                 else
                 {
-                    vel = velocity(Vector2Scale(direction, mel.speed));
+                    vel = Velocity(Vector2Scale(direction, mel.speed));
                 }
             });
 }

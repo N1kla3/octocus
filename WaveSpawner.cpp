@@ -4,9 +4,10 @@
 
 void WaveSpawner::addSpawnPoint(size_t count, float delay)
 {
-    int x, y;
-    requestSpawnLocation(x, y);
-    m_SpawnPoints.emplace_back(x, y, count, delay);
+    int posx;
+    int posy;
+    requestSpawnLocation(posx, posy);
+    m_SpawnPoints.emplace_back(posx, posy, count, delay);
 
     // TODO: Add animation of pre-spawn
 }
@@ -19,7 +20,7 @@ void WaveSpawner::requestSpawnLocation(int& posx, int& posy)
     posy = dist_y(m_RandomEngine);
 }
 
-void WaveSpawner::spawnBunch(SpawnPoint& point)
+void WaveSpawner::spawnBunch(const SpawnPoint& point)
 {
     std::poisson_distribution<int> dist(16);
     std::poisson_distribution<int> dist_y(16);
@@ -27,8 +28,8 @@ void WaveSpawner::spawnBunch(SpawnPoint& point)
     for (size_t i = 0; i < point.amount_to_spawn; i++)
     {
         SpawnParam params{};
-        params.posx = point.posx + dist(m_RandomEngine);
-        params.posy = point.posy + dist_y(m_RandomEngine);
+        params.posx = static_cast<float>(point.posx + dist(m_RandomEngine));
+        params.posy = static_cast<float>(point.posy + dist_y(m_RandomEngine));
         params.size = 10.f;
         params.damage = 10.f;
         params.health = 20;
@@ -45,10 +46,10 @@ void WaveSpawner::spawnBunch(SpawnPoint& point)
     m_TimeSinceLastSpawn = 0.f;
 }
 
-bool WaveSpawner::continueSpawnWave(size_t count)
+bool WaveSpawner::continueSpawnWave(const size_t count)
 {
-    m_EnemiesToSpawn -= count;
-    bool spawn = m_EnemiesToSpawn >= 0;
+    m_EnemiesToSpawn -= static_cast<int>(count);
+    bool const spawn = m_EnemiesToSpawn >= 0;
     if (spawn)
     {
         m_SpawnPointDelay += 0.2f;
@@ -57,11 +58,11 @@ bool WaveSpawner::continueSpawnWave(size_t count)
     return spawn;
 }
 
-WaveSpawner::WaveSpawner(Game* parent, int height, int width)
-    : m_Parent(parent)
+WaveSpawner::WaveSpawner(Game* parent, const int height, const int width)
+    : m_RandomEngine(m_RandomDevice())
+    , m_Parent(parent)
     , m_Height(height)
     , m_Width(width)
-    , m_RandomEngine(m_RandomDevice())
 {
 }
 
@@ -77,9 +78,9 @@ void WaveSpawner::startWave()
     m_TimeSinceLastSpawn = 0.f;
 }
 
-void WaveSpawner::update(float delta)
+void WaveSpawner::update(const float delta)
 {
-    bool should_continue_spawn = continueSpawnWave(m_WaveCounter * m_SpawnCountCoef);
+    bool should_continue_spawn = continueSpawnWave(m_WaveCounter * SPAWN_COUNT_COEF);
     if (m_SpawnPoints.empty() && !should_continue_spawn)
     {
         m_TimeSinceLastSpawn += delta;
@@ -96,7 +97,7 @@ void WaveSpawner::update(float delta)
         }
         else
         {
-            it++;
+            ++it;
         }
     }
     m_IsSpawning = !m_SpawnPoints.empty();

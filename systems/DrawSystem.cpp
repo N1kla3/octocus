@@ -1,6 +1,5 @@
 #include "DrawSystem.h"
 #include "../game.h"
-#include "Animation.h"
 #include "AnimationSystem.h"
 #include "BorderComponent.h"
 #include "LifeComponents.h"
@@ -8,12 +7,12 @@
 #include "SpaceComponents.h"
 #include "raylib.h"
 
-void DrawSystem::update(entt::registry& registry, float delta, GameStatus status)
+void DrawSystem::update(entt::registry& registry, const float delta, const GameStatus status)
 {
     RenderComponent player_render{};
-    float half_width = static_cast<float>(Game::m_ScreenWidth) / 2;
-    float half_height = static_cast<float>(Game::m_ScreenHeight) / 2;
-    auto camera_view = registry.view<const position, const cameraTarget, const RenderComponent>();
+    constexpr float half_width = static_cast<float>(Game::m_ScreenWidth) / 2;
+    constexpr float half_height = static_cast<float>(Game::m_ScreenHeight) / 2;
+    const auto camera_view = registry.view<const Position, const CameraTarget, const RenderComponent>();
     for (const auto& [ent, pos, target, render]: camera_view.each())
     {
         Camera2D camera{};
@@ -25,11 +24,11 @@ void DrawSystem::update(entt::registry& registry, float delta, GameStatus status
         player_render = render;
     }
 
-    auto view = registry.view<const position, const RenderComponent>(entt::exclude<player>);
-    view.each([](const position pos, const RenderComponent renderData)
+    const auto view = registry.view<const Position, const RenderComponent>(entt::exclude<Player>);
+    view.each([](const Position pos, const RenderComponent renderData)
               { DrawCircleV(Vector2{pos.x, pos.y}, renderData.radius, renderData.color); });
 
-    auto border_view = registry.view<border>();
+    const auto border_view = registry.view<Border>();
     for (const auto& [ent, border]: border_view.each())
     {
         DrawRectangleRec(border.getRect(), border.color);
@@ -42,17 +41,17 @@ void DrawSystem::update(entt::registry& registry, float delta, GameStatus status
     updateui(registry, delta, status);
 }
 
-void DrawSystem::updateui(entt::registry& registry, float delta, GameStatus status)
+void DrawSystem::updateui(entt::registry& registry, const float delta, const GameStatus status)
 {
     DrawText(TextFormat("Score: %i", status.score), 0.f, 0.f, 28.f, RED);
     DrawText(TextFormat("Enemies left: %i", status.enemies_left), 300.f, 0.f, 28.f, RED);
     DrawText(TextFormat("Next wave: %1.2f", status.next_wave_timer), 580.f, 0.f, 28.f, RED);
 
-    auto hp_view = registry.view<Health, player>();
+    const auto hp_view = registry.view<Health, Player>();
     hp_view.each(
-            [](Health hp, player)
+            [](const Health health, Player)
             {
-                DrawText(TextFormat("Health: %i / %i", hp.points, hp.max_points),
+                DrawText(TextFormat("Health: %i / %i", health.points, health.max_points),
                          0.f,
                          Game::m_ScreenHeight - 30.f,
                          28.f,

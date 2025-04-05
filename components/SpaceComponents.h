@@ -3,7 +3,7 @@
 #include "entt/entt.hpp"
 #include "raylib.h"
 
-enum class CollisionChannel
+enum class CollisionChannel : uint8_t
 {
     PLAYER,
     BOT,
@@ -11,16 +11,16 @@ enum class CollisionChannel
     NONE
 };
 
-struct position
+struct Position
 {
     float x;
     float y;
-    explicit position(float x = 0.f, float y = 0.f)
-        : x(x)
-        , y(y)
+    explicit Position(float posx = 0.f, float posy = 0.f)
+        : x(posx)
+        , y(posy)
     {
     }
-    explicit position(const Vector2 vec)
+    explicit Position(const Vector2 vec)
     {
         x = vec.x;
         y = vec.y;
@@ -31,17 +31,17 @@ struct position
     }
 };
 
-struct velocity
+struct Velocity
 {
     float dx;
     float dy;
 
-    explicit velocity(float x = 0.f, float y = 0.f)
-        : dx(x)
-        , dy(y)
+    explicit Velocity(float velx = 0.f, float vely = 0.f)
+        : dx(velx)
+        , dy(vely)
     {
     }
-    explicit velocity(const Vector2 vec)
+    explicit Velocity(const Vector2 vec)
     {
         dx = vec.x;
         dy = vec.y;
@@ -52,29 +52,29 @@ struct velocity
     }
 };
 
-struct sphere_collision
+struct SphereCollision
 {
     float radius = 10.f;
     CollisionChannel channel = CollisionChannel::NONE;
     CollisionChannel responce_channel = CollisionChannel::NONE;
 };
 
-struct collision_resolver
+struct CollisionResolver
 {
     std::vector<entt::entity> hit_entities;
 };
 
-struct player
+struct Player
 {
     int id;
 };
 
-struct bot
+struct Bot
 {
     int id;
 };
 
-struct cameraTarget
+struct CameraTarget
 {
     Vector2 offset = {0.f, 0.f};
     float rotation = 0.f;

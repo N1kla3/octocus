@@ -26,7 +26,7 @@ public:
         swap(lhs.m_Read, rhs.m_Read);
     }
 
-    void write(void* data, size_t size);
+    void write(const void* data, size_t size);
     void read(void* data, size_t size);
 
 private:
@@ -39,7 +39,7 @@ private:
 };
 
 template<typename T>
-concept NumberType = std::is_arithmetic<T>::value || std::is_enum<T>::value;
+concept NumberType = std::is_arithmetic_v<T> || std::is_enum_v<T>;
 
 template<typename T>
 class BufferStream
@@ -60,6 +60,7 @@ private:
 
 protected:
     std::unique_ptr<Buffer> m_Buffer;
+    friend T;
 };
 
 class ReadStream : public BufferStream<ReadStream>

@@ -1,11 +1,10 @@
 #include "Serialization.h"
 #include <cstdlib>
 #include <cstring>
-#include "ByteSwapper.h"
 
 Buffer::Buffer(size_t size)
 {
-    m_Buffer = reinterpret_cast<char*>(std::malloc(size));
+    m_Buffer = static_cast<char*>(std::malloc(size));
 
     if (!m_Buffer && size == 0)
     {
@@ -53,11 +52,11 @@ Buffer& Buffer::operator=(Buffer rhs)
 }
 
 
-void Buffer::write(void* data, size_t size)
+void Buffer::write(const void* data, size_t size)
 {
     if (m_Write + size > m_MaxSize)
     {
-        realloc(m_MaxSize + 10 * size);
+        realloc(m_MaxSize + (10 * size));
     }
     memcpy(m_Buffer + m_Write, data, size);
     m_Write += size;
@@ -78,7 +77,7 @@ void Buffer::realloc(size_t newSize)
     new_block = std::realloc(m_Buffer, newSize);
     if (new_block)
     {
-        m_Buffer = reinterpret_cast<char*>(new_block);
+        m_Buffer = static_cast<char*>(new_block);
         m_MaxSize = newSize;
     }
     else

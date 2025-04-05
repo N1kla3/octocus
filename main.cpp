@@ -9,7 +9,7 @@ int main()
         game->init();
         game->run();
     }
-    catch (const char* str)
+    catch ([[maybe_unused]] const char* str)
     {
         delete game;
     }

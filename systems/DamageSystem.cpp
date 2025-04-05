@@ -5,12 +5,12 @@
 
 void DamageSystem::updateDamage(entt::registry& registry)
 {
-    auto view = registry.view<collision_resolver, DamageHitComponent>();
+    const auto view = registry.view<CollisionResolver, DamageHitComponent>();
 
     view.each(
-            [&registry](auto entity, const collision_resolver& resolver, DamageHitComponent& damage)
+            [&registry](auto /*entity*/, const CollisionResolver& resolver, DamageHitComponent& damage)
             {
-                for (entt::entity hit: resolver.hit_entities)
+                for (entt::entity const hit: resolver.hit_entities)
                 {
                     Damage* hit_damage = registry.try_get<Damage>(hit);
                     if (hit_damage)

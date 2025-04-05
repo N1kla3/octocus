@@ -6,12 +6,12 @@
 #include "raylib.h"
 #include "raymath.h"
 
-void InputSystem::update(entt::registry& registry, float delta)
+void InputSystem::update(entt::registry& registry, float /*delta*/)
 {
-    auto view = registry.view<velocity, player>();
+    const auto view = registry.view<Velocity, Player>();
 
     bool request_attack = false;
-    velocity vel;
+    Velocity vel;
     vel.dx = 0.f;
     vel.dy = 0.f;
     if (IsKeyDown(KEY_W))
@@ -30,7 +30,7 @@ void InputSystem::update(entt::registry& registry, float delta)
     {
         vel.dx += -1.f;
     }
-    float len = std::sqrt(vel.dx * vel.dx + vel.dy * vel.dy);
+    const float len = std::sqrt((vel.dx * vel.dx) + (vel.dy * vel.dy));
     if (len != 0.f)
     {
         vel.dx /= len;
@@ -44,20 +44,21 @@ void InputSystem::update(entt::registry& registry, float delta)
         request_attack = true;
     }
 
-    view.each([vel](velocity& veloc, player pl) { veloc = vel; });
+    view.each([vel](Velocity& veloc, Player /*pl*/) { veloc = vel; });
 
-    auto weapon_view = registry.view<WeaponComponent, ShootComponent, position, player>();
+    const auto weapon_view = registry.view<WeaponComponent, ShootComponent, Position, Player>();
 
 
-    float mousex = static_cast<float>(GetMouseX());
-    float mousey = static_cast<float>(GetMouseY());
+    float const mousex = static_cast<float>(GetMouseX());
+    float const mousey = static_cast<float>(GetMouseY());
 
 
     weapon_view.each(
-            [mousex, mousey, request_attack](WeaponComponent& weap, ShootComponent& shoot, position pos, player pl)
+            [mousex, mousey, request_attack](
+                    WeaponComponent& weap, ShootComponent& shoot, Position /*pos*/, Player /*pl*/)
             {
-                Vector2 res = Vector2Normalize({mousex - static_cast<float>(Game::m_ScreenWidth) / 2,
-                                                mousey - static_cast<float>(Game::m_ScreenHeight) / 2});
+                Vector2 const res = Vector2Normalize({mousex - (static_cast<float>(Game::m_ScreenWidth) / 2),
+                                                      mousey - (static_cast<float>(Game::m_ScreenHeight) / 2)});
                 shoot.target_x = res.x;
                 shoot.target_y = res.y;
                 shoot.attack = true;

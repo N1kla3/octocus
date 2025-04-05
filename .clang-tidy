@@ -18,7 +18,9 @@ Checks: >
   -readability-redundant-member-init,
   -readability-else-after-return,
   -readability-uppercase-literal-suffix,
-  -readability-magic-numbers
+  -readability-magic-numbers,
+  -bugprone-easily-swappable-parameters,
+  -readability-redundant-access-specifiers
 
 CheckOptions:
   - { key: readability-identifier-naming.NamespaceCase,          value: lower_case }

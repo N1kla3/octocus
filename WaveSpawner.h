@@ -16,7 +16,7 @@ class WaveSpawner
 private:
     void addSpawnPoint(size_t count, float delay);
     void requestSpawnLocation(int& posx, int& posy);
-    void spawnBunch(SpawnPoint& point);
+    void spawnBunch(const SpawnPoint& point);
     bool continueSpawnWave(size_t count);
 
     std::vector<SpawnPoint> m_SpawnPoints;
@@ -28,7 +28,7 @@ private:
     int m_EnemiesToSpawn = 0;
     int m_Height, m_Width;
     float m_TimeSinceLastSpawn = 0.f;
-    const int m_SpawnCountCoef = 2;
+    const int SPAWN_COUNT_COEF = 2;
     float m_SpawnPointDelay = 1.f;
     bool m_IsSpawning = false;
 

@@ -42,7 +42,7 @@ void Game::run()
     while (!WindowShouldClose())
     {
         const auto current = sc::steady_clock::now();
-        float duration = sc::duration<float>{current - begin}.count();
+        float const duration = sc::duration<float>{current - begin}.count();
 
         update(duration);
 
@@ -52,7 +52,7 @@ void Game::run()
     tearDown();
 }
 
-void Game::update(float delta)
+void Game::update(const float delta)
 {
     updateGameplay(delta);
     updateDrawFrame(delta);
@@ -65,35 +65,35 @@ void Game::tearDown()
 
 void Game::spawnMelee(const SpawnParam& param)
 {
-    auto entity = m_Registry.create();
+    const auto entity = m_Registry.create();
     m_Registry.emplace<Health>(entity, param.health, param.health);
-    m_Registry.emplace<position>(entity, param.posx, param.posy);
-    m_Registry.emplace<velocity>(entity, 0.f, 0.f);
-    m_Registry.emplace<sphere_collision>(entity, param.size, CollisionChannel::BOT);
+    m_Registry.emplace<Position>(entity, param.posx, param.posy);
+    m_Registry.emplace<Velocity>(entity, 0.f, 0.f);
+    m_Registry.emplace<SphereCollision>(entity, param.size, CollisionChannel::BOT);
     m_Registry.emplace<RenderComponent>(entity, PURPLE, param.size, RenderPriority::MIDLE);
     m_Registry.emplace<WeaponComponent>(entity, param.damage, 10.f, 1.f);
     m_Registry.emplace<Damage>(entity);
-    m_Registry.emplace<bot>(entity);
+    m_Registry.emplace<Bot>(entity);
     m_Registry.emplace<MeleeAi>(entity);
     m_Status.enemies_left++;
 }
 
 void Game::spawnRange(const SpawnParam& param)
 {
-    auto entity = m_Registry.create();
+    const auto entity = m_Registry.create();
     m_Registry.emplace<Health>(entity, param.health, param.health);
-    m_Registry.emplace<position>(entity, param.posx, param.posy);
-    m_Registry.emplace<velocity>(entity, 0.f, 0.f);
-    m_Registry.emplace<sphere_collision>(entity, param.size, CollisionChannel::BOT);
+    m_Registry.emplace<Position>(entity, param.posx, param.posy);
+    m_Registry.emplace<Velocity>(entity, 0.f, 0.f);
+    m_Registry.emplace<SphereCollision>(entity, param.size, CollisionChannel::BOT);
     m_Registry.emplace<RenderComponent>(entity, BLUE, param.size, RenderPriority::MIDLE);
     m_Registry.emplace<ShootComponent>(entity, param.damage, 1.4f);
     m_Registry.emplace<Damage>(entity);
-    m_Registry.emplace<bot>(entity);
+    m_Registry.emplace<Bot>(entity);
     m_Registry.emplace<RangeAi>(entity);
     m_Status.enemies_left++;
 }
 
-void Game::updateGameplay(float delta)
+void Game::updateGameplay(const float delta)
 {
     if (!m_Spawner.isCurrentlySpawning() && m_Status.enemies_left == 0)
     {
@@ -124,7 +124,7 @@ void Game::updateGameplay(float delta)
     }
 }
 
-void Game::updateDrawFrame(float delta)
+void Game::updateDrawFrame(const float delta)
 {
     BeginDrawing();
 
@@ -137,38 +137,38 @@ void Game::updateDrawFrame(float delta)
 
 void Game::createPlayer()
 {
-    auto entity = m_Registry.create();
-    m_Registry.emplace<player>(entity); // similar like tag, alternative
+    const auto entity = m_Registry.create();
+    m_Registry.emplace<Player>(entity); // similar like tag, alternative
     m_Registry.emplace<RenderComponent>(entity, ORANGE, 10.f);
     m_Registry.emplace<Health>(entity, 100, 100);
-    m_Registry.emplace<position>(entity, 20.f, 20.f);
-    m_Registry.emplace<velocity>(entity, 0.f, 0.f);
+    m_Registry.emplace<Position>(entity, 20.f, 20.f);
+    m_Registry.emplace<Velocity>(entity, 0.f, 0.f);
     m_Registry.emplace<WeaponComponent>(entity, 60.f, 15.f, 1.3f);
     m_Registry.emplace<ShootComponent>(entity, 40.f, 0.3f, 0.0f);
-    m_Registry.emplace<sphere_collision>(entity, 10.f, CollisionChannel::PLAYER);
-    m_Registry.emplace<collision_resolver>(entity);
+    m_Registry.emplace<SphereCollision>(entity, 10.f, CollisionChannel::PLAYER);
+    m_Registry.emplace<CollisionResolver>(entity);
     m_Registry.emplace<Damage>(entity);
-    m_Registry.emplace<cameraTarget>(entity);
+    m_Registry.emplace<CameraTarget>(entity);
 }
 
 void Game::spawnBorders()
 {
-    auto left = m_Registry.create();
-    m_Registry.emplace<border>(
-            left, Vector2{0.f - 1000.f, 0.f - 2 * m_ScreenHeight}, Vector2{0.f, 0.f + 2 * m_ScreenHeight}, BROWN);
+    const auto left = m_Registry.create();
+    m_Registry.emplace<Border>(
+            left, Vector2{0.f - 1000.f, 0.f - (2 * m_ScreenHeight)}, Vector2{0.f, 0.f + (2 * m_ScreenHeight)}, BROWN);
 
-    auto right = m_Registry.create();
-    m_Registry.emplace<border>(right,
+    const auto right = m_Registry.create();
+    m_Registry.emplace<Border>(right,
                                Vector2{m_ScreenWidth, m_ScreenHeight + 1000.f},
                                Vector2{m_ScreenWidth + 1000.f, 0.f - 1000.f},
                                BROWN);
 
-    auto top = m_Registry.create();
-    m_Registry.emplace<border>(top, Vector2{0.f, 0.f}, Vector2{m_ScreenWidth, -m_ScreenHeight}, BROWN);
+    const auto top = m_Registry.create();
+    m_Registry.emplace<Border>(top, Vector2{0.f, 0.f}, Vector2{m_ScreenWidth, -m_ScreenHeight}, BROWN);
 
-    auto bottom = m_Registry.create();
-    m_Registry.emplace<border>(
-            bottom, Vector2{0.f, 0.f + 2 * m_ScreenHeight}, Vector2{m_ScreenWidth, m_ScreenHeight}, BROWN);
+    const auto bottom = m_Registry.create();
+    m_Registry.emplace<Border>(
+            bottom, Vector2{0.f, 0.f + (2 * m_ScreenHeight)}, Vector2{m_ScreenWidth, m_ScreenHeight}, BROWN);
 
     Rectangle rect{};
     rect.x = 0.f;

@@ -6,7 +6,7 @@
 
 void KillSystem::update(entt::registry& registry, float delta, GameStatus& status)
 {
-    auto cooldown_view = registry.view<Cooldown>();
+    const auto cooldown_view = registry.view<Cooldown>();
 
     cooldown_view.each(
             [delta, &registry](auto entity, Cooldown& cooldown)
@@ -18,7 +18,7 @@ void KillSystem::update(entt::registry& registry, float delta, GameStatus& statu
                 }
             });
 
-    auto projectile_view = registry.view<DamageHitComponent>();
+    const auto projectile_view = registry.view<DamageHitComponent>();
     for (const auto& [entity, projectile]: projectile_view.each())
     {
         if (projectile.hit)
@@ -27,35 +27,35 @@ void KillSystem::update(entt::registry& registry, float delta, GameStatus& statu
         }
     }
 
-    auto damage_check_view = registry.view<Damage, Health>();
+    const auto damage_check_view = registry.view<Damage, Health>();
 
     damage_check_view.each(
             [&registry](auto entity, Damage& damage, Health& health)
             {
-                health.points -= damage.points;
+                health.points -= static_cast<int>(damage.points);
                 damage.points = 0;
                 if (health.points <= 0)
                 {
                     registry.emplace<DeathComponent>(entity);
                 }
             });
-    auto bot_score = registry.view<DeathComponent, bot>();
+    const auto bot_score = registry.view<DeathComponent, Bot>();
     bot_score.each(
-            [&registry, &status](auto entity)
+            [&status]([[maybe_unused]] auto entity)
             {
                 status.score++;
                 status.enemies_left--;
             });
 
-    auto player_dead = registry.view<DeathComponent, player>();
+    const auto player_dead = registry.view<DeathComponent, Player>();
     player_dead.each(
-            [&registry, &status](auto entity)
+            [&registry, &status]([[maybe_unused]] auto entity)
             {
                 status.is_player_dead = true;
-                auto ent = registry.create();
+                const auto ent = registry.create();
                 registry.emplace<TextAnimation>(ent);
             });
 
-    auto death_view = registry.view<DeathComponent>();
+    const auto death_view = registry.view<DeathComponent>();
     death_view.each([&registry](auto entity) { registry.destroy(entity); });
 }

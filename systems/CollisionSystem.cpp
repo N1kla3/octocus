@@ -4,25 +4,27 @@
 
 void CollisionSystem::update(entt::registry& registry)
 {
-    auto view = registry.view<const sphere_collision, const position, collision_resolver>();
+    const auto view = registry.view<const SphereCollision, const Position, CollisionResolver>();
 
     view.each(
             [&registry](entt::entity main_ent,
-                        const sphere_collision collision,
-                        const position pos,
-                        collision_resolver& resolver)
+                        const SphereCollision collision,
+                        const Position pos,
+                        CollisionResolver& resolver)
             {
                 resolver.hit_entities.clear();
-                auto per_view = registry.view<const sphere_collision, const position>();
+                const auto per_view = registry.view<const SphereCollision, const Position>();
                 per_view.each(
                         [&collision, &pos, &resolver, &main_ent](
-                                entt::entity entity, const sphere_collision other_coll, const position other_pos)
+                                const entt::entity entity, const SphereCollision other_coll, const Position other_pos)
                         {
                             if (main_ent == entity)
+                            {
                                 return;
+                            }
 
-                            bool same_channel = collision.responce_channel == other_coll.channel;
-                            bool result = CheckCollisionCircles(
+                            bool const same_channel = collision.responce_channel == other_coll.channel;
+                            bool const result = CheckCollisionCircles(
                                     {pos.x, pos.y}, collision.radius, {other_pos.x, other_pos.y}, other_coll.radius);
                             if (result && same_channel)
                             {
