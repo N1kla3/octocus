@@ -1,0 +1,9 @@
+{
+  "name" : "octocus",
+  "version-string" : "1.0.0",
+  "builtin-baseline" : "b7dabb6577d0e4d0bd0483bce521f2e4b459c5de",
+  "dependencies" : [ {
+    "name" : "gamenetworkingsockets",
+    "version>=" : "1.4.1#1"
+  } ]
+}

@@ -14,7 +14,10 @@ add_subdirectory(raylib)
 add_subdirectory(entt)
 #cmake_policy(set CMP0074 NEW)
 set(CMAKE_POLICY_DEFAULT_CMP0074 NEW)
-add_subdirectory(GameNetworkingSockets)
+
+
+find_package(GameNetworkingSockets CONFIG REQUIRED)
+
 
 include_directories(components)
 include_directories(systems)
