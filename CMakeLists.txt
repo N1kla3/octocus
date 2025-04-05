@@ -34,6 +34,8 @@ add_executable(${PROJECT_NAME} main.cpp
         networking/Serialization.h
         networking/Serialization.cpp
         networking/ByteSwapper.h
+        networking/Server.h
+        networking/Server.cpp
         systems/DamageSystem.cpp
         systems/DamageSystem.h
         systems/InputSystem.h
@@ -55,4 +57,4 @@ add_executable(${PROJECT_NAME} main.cpp
         game.h game.cpp
         WaveSpawner.h WaveSpawner.cpp)
 
-target_link_libraries(${PROJECT_NAME} raylib EnTT::EnTT GameNetworkingSockets::static "-static-libgcc -static-libstdc++")
+target_link_libraries(${PROJECT_NAME} raylib EnTT::EnTT GameNetworkingSockets::shared)
