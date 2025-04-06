@@ -8,10 +8,11 @@ int main()
     // Begin server test
     // Create client and server sockets
     InitSteamDatagramConnectionSockets();
-    LocalUserInput_Init();
+    // LocalUserInput_Init();
 
     ChatServer chat_server;
-    chat_server.Run(33333);
+    std::thread server(&ChatServer::Run, &chat_server, 33333);
+    // chat_server.Run(33333);
 
     ShutdownSteamDatagramConnectionSockets();
 
@@ -21,6 +22,7 @@ int main()
     {
         game->init();
         game->run();
+        server.join();
     }
     catch ([[maybe_unused]] const char* str)
     {
