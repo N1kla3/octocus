@@ -4,7 +4,7 @@ void ChatServer::Run(uint16 nPort)
 {
     // Select instance to use.  For now we'll always use the default.
     // But we could use SteamGameServerNetworkingSockets() on Steam.
-    m_pInterface = SteamNetworkingSockets();
+    m_Interface = SteamNetworkingSockets();
 
     // Start listening
     SteamNetworkingIPAddr serverLocalAddr;
@@ -13,13 +13,13 @@ void ChatServer::Run(uint16 nPort)
     SteamNetworkingConfigValue_t opt;
     opt.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged,
                (void*) SteamNetConnectionStatusChangedCallback);
-    m_hListenSock = m_pInterface->CreateListenSocketIP(serverLocalAddr, 1, &opt);
-    if (m_hListenSock == k_HSteamListenSocket_Invalid)
+    m_ListenSock = m_Interface->CreateListenSocketIP(serverLocalAddr, 1, &opt);
+    if (m_ListenSock == k_HSteamListenSocket_Invalid)
     {
         printf("Failed to listen on port %d", nPort);
     }
-    m_hPollGroup = m_pInterface->CreatePollGroup();
-    if (m_hPollGroup == k_HSteamNetPollGroup_Invalid)
+    m_PollGroup = m_Interface->CreatePollGroup();
+    if (m_PollGroup == k_HSteamNetPollGroup_Invalid)
     {
         printf("Failed to listen on port %d", nPort);
     }
@@ -35,7 +35,7 @@ void ChatServer::Run(uint16 nPort)
 
     // Close all the connections
     printf("Closing connections...\n");
-    for (auto it: m_mapClients)
+    for (auto it: m_MapClients)
     {
         // Send them one more goodbye message.  Note that we also have the
         // connection close reason as a place to send final data.  However,
@@ -45,15 +45,15 @@ void ChatServer::Run(uint16 nPort)
 
         // Close the connection.  We use "linger mode" to ask SteamNetworkingSockets
         // to flush this out and close gracefully.
-        m_pInterface->CloseConnection(it.first, 0, "Server Shutdown", true);
+        m_Interface->CloseConnection(it.first, 0, "Server Shutdown", true);
     }
-    m_mapClients.clear();
+    m_MapClients.clear();
 
-    m_pInterface->CloseListenSocket(m_hListenSock);
-    m_hListenSock = k_HSteamListenSocket_Invalid;
+    m_Interface->CloseListenSocket(m_ListenSock);
+    m_ListenSock = k_HSteamListenSocket_Invalid;
 
-    m_pInterface->DestroyPollGroup(m_hPollGroup);
-    m_hPollGroup = k_HSteamNetPollGroup_Invalid;
+    m_Interface->DestroyPollGroup(m_PollGroup);
+    m_PollGroup = k_HSteamNetPollGroup_Invalid;
 }
 
 void ChatServer::CloseServer()
@@ -63,12 +63,12 @@ void ChatServer::CloseServer()
 
 void ChatServer::SendStringToClient(HSteamNetConnection conn, const char* str)
 {
-    m_pInterface->SendMessageToConnection(conn, str, (uint32) strlen(str), k_nSteamNetworkingSend_Reliable, nullptr);
+    m_Interface->SendMessageToConnection(conn, str, (uint32) strlen(str), k_nSteamNetworkingSend_Reliable, nullptr);
 }
 
 void ChatServer::SendStringToAllClients(const char* str, HSteamNetConnection except)
 {
-    for (auto& c: m_mapClients)
+    for (auto& c: m_MapClients)
     {
         if (c.first != except)
         {
@@ -84,7 +84,7 @@ void ChatServer::PollIncomingMessages()
     while (!m_CloseServer)
     {
         ISteamNetworkingMessage* pIncomingMsg = nullptr;
-        int numMsgs = m_pInterface->ReceiveMessagesOnPollGroup(m_hPollGroup, &pIncomingMsg, 1);
+        int numMsgs = m_Interface->ReceiveMessagesOnPollGroup(m_PollGroup, &pIncomingMsg, 1);
         if (numMsgs == 0)
         {
             break;
@@ -94,8 +94,8 @@ void ChatServer::PollIncomingMessages()
             printf("Error checking for messages");
         }
         assert(numMsgs == 1 && pIncomingMsg);
-        auto itClient = m_mapClients.find(pIncomingMsg->m_conn);
-        assert(itClient != m_mapClients.end());
+        auto itClient = m_MapClients.find(pIncomingMsg->m_conn);
+        assert(itClient != m_MapClients.end());
 
         // '\0'-terminate it to make it easier to parse
         std::string sCmd;
@@ -115,7 +115,7 @@ void ChatServer::PollIncomingMessages()
                 ++nick;
 
             // Let everybody else know they changed their name
-            sprintf(temp, "%s shall henceforth be known as %s", itClient->second.m_sNick.c_str(), nick);
+            sprintf(temp, "%s shall henceforth be known as %s", itClient->second.nick.c_str(), nick);
             SendStringToAllClients(temp, itClient->first);
 
             // Respond to client
@@ -128,7 +128,7 @@ void ChatServer::PollIncomingMessages()
         }
 
         // Assume it's just a ordinary chat message, dispatch to everybody else
-        sprintf(temp, "%s: %s", itClient->second.m_sNick.c_str(), cmd);
+        sprintf(temp, "%s: %s", itClient->second.nick.c_str(), cmd);
         SendStringToAllClients(temp, itClient->first);
     }
 }
@@ -137,10 +137,10 @@ void ChatServer::SetClientNick(HSteamNetConnection hConn, const char* nick)
 {
 
     // Remember their nick
-    m_mapClients[hConn].m_sNick = nick;
+    m_MapClients[hConn].nick = nick;
 
     // Set the connection name, too, which is useful for debugging
-    m_pInterface->SetConnectionName(hConn, nick);
+    m_Interface->SetConnectionName(hConn, nick);
 }
 
 void ChatServer::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo)
@@ -165,8 +165,8 @@ void ChatServer::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChang
                 // Locate the client.  Note that it should have been found, because this
                 // is the only codepath where we remove clients (except on shutdown),
                 // and connection change callbacks are dispatched in queue order.
-                auto itClient = m_mapClients.find(pInfo->m_hConn);
-                assert(itClient != m_mapClients.end());
+                auto itClient = m_MapClients.find(pInfo->m_hConn);
+                assert(itClient != m_MapClients.end());
 
                 // Select appropriate log messages
                 const char* pszDebugLogAction;
@@ -175,7 +175,7 @@ void ChatServer::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChang
                     pszDebugLogAction = "problem detected locally";
                     sprintf(temp,
                             "Alas, %s hath fallen into shadow.  (%s)",
-                            itClient->second.m_sNick.c_str(),
+                            itClient->second.nick.c_str(),
                             pInfo->m_info.m_szEndDebug);
                 }
                 else
@@ -183,7 +183,7 @@ void ChatServer::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChang
                     // Note that here we could check the reason code to see if
                     // it was a "usual" connection or an "unusual" one.
                     pszDebugLogAction = "closed by peer";
-                    sprintf(temp, "%s hath departed", itClient->second.m_sNick.c_str());
+                    sprintf(temp, "%s hath departed", itClient->second.nick.c_str());
                 }
 
                 // Spew something to our own log.  Note that because we put their nick
@@ -195,7 +195,7 @@ void ChatServer::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChang
                        pInfo->m_info.m_eEndReason,
                        pInfo->m_info.m_szEndDebug);
 
-                m_mapClients.erase(itClient);
+                m_MapClients.erase(itClient);
 
                 // Send a message so everybody else knows what happened
                 SendStringToAllClients(temp);
@@ -211,33 +211,33 @@ void ChatServer::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChang
             // to finish up.  The reason information do not matter in this case,
             // and we cannot linger because it's already closed on the other end,
             // so we just pass 0's.
-            m_pInterface->CloseConnection(pInfo->m_hConn, 0, nullptr, false);
+            m_Interface->CloseConnection(pInfo->m_hConn, 0, nullptr, false);
             break;
         }
 
         case k_ESteamNetworkingConnectionState_Connecting:
         {
             // This must be a new connection
-            assert(m_mapClients.find(pInfo->m_hConn) == m_mapClients.end());
+            assert(m_MapClients.find(pInfo->m_hConn) == m_MapClients.end());
 
             printf("Connection request from %s", pInfo->m_info.m_szConnectionDescription);
 
             // A client is attempting to connect
             // Try to accept the connection.
-            if (m_pInterface->AcceptConnection(pInfo->m_hConn) != k_EResultOK)
+            if (m_Interface->AcceptConnection(pInfo->m_hConn) != k_EResultOK)
             {
                 // This could fail.  If the remote host tried to connect, but then
                 // disconnected, the connection may already be half closed.  Just
                 // destroy whatever we have on our side.
-                m_pInterface->CloseConnection(pInfo->m_hConn, 0, nullptr, false);
+                m_Interface->CloseConnection(pInfo->m_hConn, 0, nullptr, false);
                 printf("Can't accept connection.  (It was already closed?)");
                 break;
             }
 
             // Assign the poll group
-            if (!m_pInterface->SetConnectionPollGroup(pInfo->m_hConn, m_hPollGroup))
+            if (!m_Interface->SetConnectionPollGroup(pInfo->m_hConn, m_PollGroup))
             {
-                m_pInterface->CloseConnection(pInfo->m_hConn, 0, nullptr, false);
+                m_Interface->CloseConnection(pInfo->m_hConn, 0, nullptr, false);
                 printf("Failed to set poll group?");
                 break;
             }
@@ -259,15 +259,15 @@ void ChatServer::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChang
             SendStringToClient(pInfo->m_hConn, temp);
 
             // Also send them a list of everybody who is already connected
-            if (m_mapClients.empty())
+            if (m_MapClients.empty())
             {
                 SendStringToClient(pInfo->m_hConn, "Thou art utterly alone.");
             }
             else
             {
-                sprintf(temp, "%d companions greet you:", (int) m_mapClients.size());
-                for (auto& c: m_mapClients)
-                    SendStringToClient(pInfo->m_hConn, c.second.m_sNick.c_str());
+                sprintf(temp, "%d companions greet you:", (int) m_MapClients.size());
+                for (auto& c: m_MapClients)
+                    SendStringToClient(pInfo->m_hConn, c.second.nick.c_str());
             }
 
             // Let everybody else know who they are for now
@@ -275,7 +275,7 @@ void ChatServer::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChang
             SendStringToAllClients(temp, pInfo->m_hConn);
 
             // Add them to the client list, using std::map wacky syntax
-            m_mapClients[pInfo->m_hConn];
+            m_MapClients[pInfo->m_hConn];
             SetClientNick(pInfo->m_hConn, nick);
             break;
         }
@@ -294,5 +294,5 @@ void ChatServer::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChang
 void ChatServer::PollConnectionStateChanges()
 {
     s_pCallbackInstance = this;
-    m_pInterface->RunCallbacks();
+    m_Interface->RunCallbacks();
 }

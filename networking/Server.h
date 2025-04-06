@@ -24,10 +24,10 @@ static void DebugOutputDelegate(ESteamNetworkingSocketsDebugOutputType, const ch
 
 static void InitSteamDatagramConnectionSockets()
 {
-    SteamDatagramErrMsg errMsg;
-    if (!GameNetworkingSockets_Init(nullptr, errMsg))
+    SteamDatagramErrMsg err_msg;
+    if (!GameNetworkingSockets_Init(nullptr, err_msg))
     {
-        printf("%s", errMsg);
+        printf("%s", err_msg);
         assert(false);
     }
 
@@ -53,15 +53,15 @@ static void ShutdownSteamDatagramConnectionSockets()
 }
 
 // trim from start (in place)
-static inline void ltrim(std::string& s)
+static inline void ltrim(std::string& str)
 {
-    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) { return !std::isspace(ch); }));
+    str.erase(str.begin(), std::find_if(str.begin(), str.end(), [](int cha) { return !std::isspace(cha); }));
 }
 
 // trim from end (in place)
-static inline void rtrim(std::string& s)
+static inline void rtrim(std::string& str)
 {
-    s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch) { return !std::isspace(ch); }).base(), s.end());
+    str.erase(std::find_if(str.rbegin(), str.rend(), [](int cha) { return !std::isspace(cha); }).base(), str.end());
 }
 
 
@@ -72,17 +72,17 @@ public:
     void CloseServer();
 
 private:
-    HSteamListenSocket m_hListenSock;
-    HSteamNetPollGroup m_hPollGroup;
-    ISteamNetworkingSockets* m_pInterface;
+    HSteamListenSocket m_ListenSock;
+    HSteamNetPollGroup m_PollGroup;
+    ISteamNetworkingSockets* m_Interface;
     bool m_CloseServer = false;
 
-    struct Client_t
+    struct ClientData
     {
-        std::string m_sNick;
+        std::string nick;
     };
 
-    std::map<HSteamNetConnection, Client_t> m_mapClients;
+    std::map<HSteamNetConnection, ClientData> m_MapClients;
 
     void SendStringToClient(HSteamNetConnection conn, const char* str);
 
