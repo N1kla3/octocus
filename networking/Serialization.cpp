@@ -52,7 +52,7 @@ Buffer& Buffer::operator=(Buffer rhs)
 }
 
 
-void Buffer::write(const void* data, size_t size)
+void Buffer::write(void* data, size_t size)
 {
     if (m_Write + size > m_MaxSize)
     {

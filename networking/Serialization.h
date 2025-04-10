@@ -26,7 +26,7 @@ public:
         swap(lhs.m_Read, rhs.m_Read);
     }
 
-    void write(const void* data, size_t size);
+    void write(void* data, size_t size);
     void read(void* data, size_t size);
 
 private:
@@ -44,6 +44,8 @@ concept NumberType = std::is_arithmetic_v<T> || std::is_enum_v<T>;
 template<typename T>
 class BufferStream
 {
+    friend T;
+
 public:
     template<typename U>
     void serialize(U& data)
@@ -60,47 +62,19 @@ private:
 
 protected:
     std::unique_ptr<Buffer> m_Buffer;
-    friend T;
 };
 
 class ReadStream : public BufferStream<ReadStream>
 {
 public:
-    friend class BufferStream<ReadStream>;
+    friend class BufferStream;
 
-    template<typename T>
-    void serialize_impl(T& data)
+    explicit ReadStream(std::unique_ptr<Buffer>&& buffer)
+        : BufferStream<ReadStream>(std::move(buffer))
     {
-        write(data, sizeof(T));
-    }
-    template<typename T>
-    void serialize_impl(std::vector<T>& data)
-    {
-        write(data.size(), sizeof(size_t));
-
-        for (const T& val: data)
-        {
-            write(val, sizeof(T));
-        }
     }
 
 private:
-    template<NumberType T>
-    void write(T& data, size_t size)
-    {
-        if constexpr (std::endian::native == std::endian::big)
-        {
-            data = oct::byteSwap(data);
-        }
-        m_Buffer->write(data, size);
-    }
-};
-
-class WriteStream : public BufferStream<WriteStream>
-{
-public:
-    friend class BufferStream<WriteStream>;
-
     template<typename T>
     void serialize_impl(T& data)
     {
@@ -122,7 +96,47 @@ private:
     template<NumberType T>
     void read(T& data, size_t size)
     {
-        m_Buffer->read(data, size);
+        if constexpr (std::endian::native == std::endian::big)
+        {
+            data = oct::byteSwap(data);
+        }
+        m_Buffer->read(&data, size);
+    }
+};
+
+class WriteStream : public BufferStream<WriteStream>
+{
+    friend class BufferStream;
+
+public:
+    explicit WriteStream(std::unique_ptr<Buffer>&& buffer)
+        : BufferStream<WriteStream>(std::move(buffer))
+    {
+    }
+
+private:
+    template<typename T>
+    void serialize_impl(T& data)
+    {
+        write(data, sizeof(T));
+    }
+    template<typename T>
+    void serialize_impl(std::vector<T>& data)
+    {
+        size_t size = data.size();
+        write(size, sizeof(size_t));
+
+        for (T& val: data)
+        {
+            write(val, sizeof(T));
+        }
+    }
+
+private:
+    template<NumberType T>
+    void write(T& data, size_t size)
+    {
+        m_Buffer->write(&data, size);
         if constexpr (std::endian::native == std::endian::big)
         {
             data = oct::byteSwap(data);

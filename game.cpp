@@ -15,6 +15,7 @@
 #include "SpaceComponents.h"
 #include "StatusComponents.h"
 #include "WeaponComponent.h"
+#include "networking/Serialization.h"
 #include "raylib.h"
 
 Game::Game()
@@ -38,6 +39,19 @@ void Game::run()
 {
     namespace sc = std::chrono;
     auto begin = sc::steady_clock::now();
+
+    std::unique_ptr<Buffer> buffer = std::make_unique<Buffer>(1000);
+    ReadStream stream(std::move(buffer));
+
+    std::unique_ptr<Buffer> sec_buffer = std::make_unique<Buffer>(1000);
+    WriteStream write_stream(std::move(sec_buffer));
+
+    int var = 32;
+    write_stream.serialize(var);
+
+    std::vector<float> floats{3.f, 5.f, 6.f};
+    write_stream.serialize(floats);
+    write_stream.serialize(var);
 
     while (!WindowShouldClose())
     {
