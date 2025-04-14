@@ -40,18 +40,31 @@ void Game::run()
     namespace sc = std::chrono;
     auto begin = sc::steady_clock::now();
 
-    std::unique_ptr<Buffer> buffer = std::make_unique<Buffer>(1000);
-    ReadStream stream(std::move(buffer));
 
+    // ~Start testcase
     std::unique_ptr<Buffer> sec_buffer = std::make_unique<Buffer>(1000);
-    WriteStream write_stream(std::move(sec_buffer));
+    WriteStream write_stream(sec_buffer.get());
 
     int var = 32;
     write_stream.serialize(var);
 
-    std::vector<float> floats{3.f, 5.f, 6.f};
+    std::vector<float> floats{3.43f, 5.88f, 6.12f};
     write_stream.serialize(floats);
     write_stream.serialize(var);
+
+    ReadStream stream(sec_buffer.get());
+    int out_var = 0;
+    stream.serialize(out_var);
+    floats.clear();
+    stream.serialize(floats);
+
+    // prints
+    printf("read var is %d \n", out_var);
+    for (auto flo: floats)
+    {
+        printf("read float is %f \n", flo);
+    }
+    // ~End testcase
 
     while (!WindowShouldClose())
     {

@@ -31,11 +31,14 @@ add_executable(${PROJECT_NAME} main.cpp
         components/StatusComponents.h
         components/Animation.h
         components/BorderComponent.h
+        components/ReplicationId.h
         networking/Serialization.h
         networking/Serialization.cpp
         networking/ByteSwapper.h
         networking/Server.h
         networking/Server.cpp
+        networking/Replication.h
+        networking/Replication.cpp
         systems/DamageSystem.cpp
         systems/DamageSystem.h
         systems/InputSystem.h

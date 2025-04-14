@@ -1,7 +1,6 @@
 #pragma once
 #include <bit>
 #include <cstddef>
-#include <memory>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -50,18 +49,24 @@ public:
     template<typename U>
     void serialize(U& data)
     {
-        static_cast<T*>(this)->serialize_impl(data);
+        static_cast<T*>(this)->serializeImpl(data);
+    }
+
+    Buffer* takeBuffer() const
+    {
+        return m_Buffer;
     }
 
 private:
     BufferStream() = delete;
-    explicit BufferStream(std::unique_ptr<Buffer>&& buffer)
-        : m_Buffer(std::move(buffer))
+    explicit BufferStream(Buffer* buffer)
+        : m_Buffer(buffer)
     {
     }
 
 protected:
-    std::unique_ptr<Buffer> m_Buffer;
+    // non-owning
+    Buffer* m_Buffer;
 };
 
 class ReadStream : public BufferStream<ReadStream>
@@ -69,19 +74,19 @@ class ReadStream : public BufferStream<ReadStream>
 public:
     friend class BufferStream;
 
-    explicit ReadStream(std::unique_ptr<Buffer>&& buffer)
-        : BufferStream<ReadStream>(std::move(buffer))
+    explicit ReadStream(Buffer* buffer)
+        : BufferStream<ReadStream>(buffer)
     {
     }
 
 private:
     template<typename T>
-    void serialize_impl(T& data)
+    void serializeImpl(T& data)
     {
         read(data, sizeof(T));
     }
     template<typename T>
-    void serialize_impl(std::vector<T>& data)
+    void serializeImpl(std::vector<T>& data)
     {
         size_t size;
         read(size, sizeof(size_t));
@@ -109,19 +114,19 @@ class WriteStream : public BufferStream<WriteStream>
     friend class BufferStream;
 
 public:
-    explicit WriteStream(std::unique_ptr<Buffer>&& buffer)
-        : BufferStream<WriteStream>(std::move(buffer))
+    explicit WriteStream(Buffer* buffer)
+        : BufferStream<WriteStream>(buffer)
     {
     }
 
 private:
     template<typename T>
-    void serialize_impl(T& data)
+    void serializeImpl(T& data)
     {
         write(data, sizeof(T));
     }
     template<typename T>
-    void serialize_impl(std::vector<T>& data)
+    void serializeImpl(std::vector<T>& data)
     {
         size_t size = data.size();
         write(size, sizeof(size_t));
