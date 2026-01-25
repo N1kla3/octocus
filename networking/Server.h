@@ -13,8 +13,6 @@
 #include <steam/isteamnetworkingutils.h>
 #include <steam/steamnetworkingsockets.h>
 
-#include <windows.h>
-
 inline SteamNetworkingMicroseconds g_logTimeZero;
 
 static void DebugOutputDelegate(ESteamNetworkingSocketsDebugOutputType, const char* msg)
