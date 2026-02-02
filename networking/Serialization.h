@@ -2,37 +2,32 @@
 #include <bit>
 #include <cstddef>
 #include <type_traits>
-#include <utility>
 #include <vector>
 #include "ByteSwapper.h"
 
-class Buffer
+class ReplicationBuffer
 {
 public:
-    explicit Buffer(size_t size);
-    ~Buffer();
+    ReplicationBuffer() = delete;
+    explicit ReplicationBuffer(size_t size);
+    ~ReplicationBuffer();
 
-    Buffer(const Buffer& rhs);
-    Buffer(Buffer&& rhs) noexcept;
-    Buffer& operator=(Buffer rhs);
-    friend void swap(Buffer& lhs, Buffer& rhs) noexcept
-    {
-        using std::swap;
-
-        swap(lhs.m_Buffer, rhs.m_Buffer);
-        swap(lhs.m_MaxSize, rhs.m_MaxSize);
-        swap(lhs.m_Write, rhs.m_Write);
-        swap(lhs.m_Read, rhs.m_Read);
-    }
+    ReplicationBuffer(const ReplicationBuffer& rhs);
+    ReplicationBuffer(ReplicationBuffer&& rhs) noexcept;
+    ReplicationBuffer& operator=(const ReplicationBuffer& rhs);
+    ReplicationBuffer& operator=(ReplicationBuffer&& rhs) noexcept;
 
     void write(void* data, size_t size);
     void read(void* data, size_t size);
 
+    void resetHead();
+    void resetWrittenData();
+
 private:
     char* m_Buffer = nullptr;
-    size_t m_Read = 0;
-    size_t m_Write = 0;
-    size_t m_MaxSize = 0;
+    size_t m_Head = 0;
+    size_t m_Reserved = 0;
+    size_t m_Written = 0;
 
     void realloc(size_t newSize);
 };
@@ -52,21 +47,21 @@ public:
         static_cast<T*>(this)->serializeImpl(data);
     }
 
-    Buffer* takeBuffer() const
+    const ReplicationBuffer* takeBuffer() const
     {
         return m_Buffer;
     }
 
 private:
     BufferStream() = delete;
-    explicit BufferStream(Buffer* buffer)
+    explicit BufferStream(ReplicationBuffer* buffer)
         : m_Buffer(buffer)
     {
     }
 
 protected:
     // non-owning
-    Buffer* m_Buffer;
+    ReplicationBuffer* m_Buffer;
 };
 
 class ReadStream : public BufferStream<ReadStream>
@@ -74,7 +69,7 @@ class ReadStream : public BufferStream<ReadStream>
 public:
     friend class BufferStream;
 
-    explicit ReadStream(Buffer* buffer)
+    explicit ReadStream(ReplicationBuffer* buffer)
         : BufferStream<ReadStream>(buffer)
     {
     }
@@ -114,7 +109,7 @@ class WriteStream : public BufferStream<WriteStream>
     friend class BufferStream;
 
 public:
-    explicit WriteStream(Buffer* buffer)
+    explicit WriteStream(ReplicationBuffer* buffer)
         : BufferStream<WriteStream>(buffer)
     {
     }

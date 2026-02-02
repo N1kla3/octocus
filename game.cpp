@@ -42,7 +42,7 @@ void Game::run()
 
 
     // ~Start testcase
-    std::unique_ptr<Buffer> sec_buffer = std::make_unique<Buffer>(1000);
+    std::unique_ptr<ReplicationBuffer> sec_buffer = std::make_unique<ReplicationBuffer>(1000);
     WriteStream write_stream(sec_buffer.get());
 
     int var = 32;
@@ -51,6 +51,8 @@ void Game::run()
     std::vector<float> floats{3.43f, 5.88f, 6.12f};
     write_stream.serialize(floats);
     write_stream.serialize(var);
+
+    sec_buffer->resetHead();
 
     ReadStream stream(sec_buffer.get());
     int out_var = 0;

@@ -1,87 +1,135 @@
 #include "Serialization.h"
+#include <cassert>
 #include <cstdlib>
 #include <cstring>
 
-Buffer::Buffer(size_t size)
+ReplicationBuffer::ReplicationBuffer(size_t size)
 {
-    m_Buffer = static_cast<char*>(std::malloc(size));
-
-    if (!m_Buffer && size == 0)
+    if (size == 0)
     {
-        throw "Cant allocate buffer";
+        return;
     }
 
-    m_MaxSize = size;
+    m_Buffer = static_cast<char*>(std::malloc(size));
+
+    if (!m_Buffer)
+    {
+        throw std::bad_alloc();
+    }
+
+    m_Reserved = size;
 }
 
-Buffer::~Buffer()
+ReplicationBuffer::~ReplicationBuffer()
 {
     std::free(m_Buffer);
 }
 
-Buffer::Buffer(const Buffer& rhs)
+ReplicationBuffer::ReplicationBuffer(const ReplicationBuffer& rhs)
 {
-    m_Buffer = static_cast<char*>(std::malloc(rhs.m_MaxSize));
+    m_Buffer = static_cast<char*>(std::malloc(rhs.m_Reserved));
 
     if (!m_Buffer)
     {
-        throw "Cant allocate buffer on copy";
+        throw std::bad_alloc();
     }
 
-    memcpy(m_Buffer, rhs.m_Buffer, rhs.m_MaxSize);
+    memcpy(m_Buffer, rhs.m_Buffer, rhs.m_Written);
 
-    m_MaxSize = rhs.m_MaxSize;
-    m_Read = rhs.m_Read;
-    m_Write = rhs.m_Write;
+    m_Reserved = rhs.m_Reserved;
+    m_Head = rhs.m_Head;
+    m_Written = rhs.m_Written;
 }
 
-Buffer::Buffer(Buffer&& rhs) noexcept
+ReplicationBuffer::ReplicationBuffer(ReplicationBuffer&& rhs) noexcept
 {
     m_Buffer = rhs.m_Buffer;
-    m_MaxSize = rhs.m_MaxSize;
-    m_Read = rhs.m_Read;
-    m_Write = rhs.m_Write;
     rhs.m_Buffer = nullptr;
+    m_Reserved = rhs.m_Reserved;
+    m_Head = rhs.m_Head;
+    m_Written = rhs.m_Written;
 }
 
-Buffer& Buffer::operator=(Buffer rhs)
+ReplicationBuffer& ReplicationBuffer::operator=(const ReplicationBuffer& rhs)
 {
-    swap(*this, rhs);
+    if (this == &rhs)
+    {
+        return *this;
+    }
+    std::free(m_Buffer);
+    m_Buffer = static_cast<char*>(std::malloc(rhs.m_Reserved));
 
+    if (!m_Buffer)
+    {
+        throw std::bad_alloc();
+    }
+
+    memcpy(m_Buffer, rhs.m_Buffer, rhs.m_Written);
+
+    m_Reserved = rhs.m_Reserved;
+    m_Head = rhs.m_Head;
+    m_Written = rhs.m_Written;
+    return *this;
+}
+
+ReplicationBuffer& ReplicationBuffer::operator=(ReplicationBuffer&& rhs) noexcept
+{
+    m_Buffer = rhs.m_Buffer;
+    rhs.m_Buffer = nullptr;
+    m_Reserved = rhs.m_Reserved;
+    m_Head = rhs.m_Head;
+    m_Written = rhs.m_Written;
     return *this;
 }
 
 
-void Buffer::write(void* data, size_t size)
+void ReplicationBuffer::write(void* data, size_t size)
 {
-    if (m_Write + size > m_MaxSize)
+    if (m_Head + size > m_Reserved)
     {
-        realloc(m_MaxSize + (10 * size));
+        // TODO:
+        realloc(m_Reserved + (10 * size));
     }
-    memcpy(m_Buffer + m_Write, data, size);
-    m_Write += size;
+    memcpy(m_Buffer + m_Head, data, size);
+    m_Head += size;
+    m_Written = m_Head;
 }
 
-void Buffer::read(void* data, size_t size)
+void ReplicationBuffer::read(void* data, size_t size)
 {
-    if (m_Read + size < m_MaxSize)
+    if (m_Head + size < m_Written)
     {
-        memcpy(data, m_Buffer + m_Read, size);
-        m_Read += size;
+        memcpy(data, m_Buffer + m_Head, size);
+        m_Head += size;
+    }
+    else
+    {
+        static_assert(true);
     }
 }
 
-void Buffer::realloc(size_t newSize)
+void ReplicationBuffer::realloc(size_t newSize)
 {
     void* new_block = nullptr;
     new_block = std::realloc(m_Buffer, newSize);
     if (new_block)
     {
         m_Buffer = static_cast<char*>(new_block);
-        m_MaxSize = newSize;
+        m_Reserved = newSize;
     }
     else
     {
-        throw "cant realloc buffer";
+        throw std::bad_alloc();
     }
+}
+
+void ReplicationBuffer::resetHead()
+{
+    m_Head = 0;
+}
+
+void ReplicationBuffer::resetWrittenData()
+{
+    m_Head = 0;
+    m_Written = 0;
 }

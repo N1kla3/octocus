@@ -20,13 +20,13 @@ int main()
 {
     Game* game = new Game{};
 
-    std::thread server(&StartServer);
+    // std::thread server(&StartServer);
 
     try
     {
         game->init();
         game->run();
-        server.join();
+        // server.join();
     }
     catch ([[maybe_unused]] const char* str)
     {
