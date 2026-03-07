@@ -1,5 +1,7 @@
 #include "KillSystem.h"
+#if OCT_CLIENT
 #include "Animation.h"
+#endif
 #include "LifeComponents.h"
 #include "SpaceComponents.h"
 #include "WeaponComponent.h"
@@ -53,7 +55,9 @@ void KillSystem::update(entt::registry& registry, float delta, GameStatus& statu
             {
                 status.is_player_dead = true;
                 const auto ent = registry.create();
+#if OCT_CLIENT
                 registry.emplace<TextAnimation>(ent);
+#endif
             });
 
     const auto death_view = registry.view<DeathComponent>();

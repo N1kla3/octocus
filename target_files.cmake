@@ -2,11 +2,9 @@ set(OCTOCUS_SOURCES
 	main.cpp
         components/SpaceComponents.h
         components/LifeComponents.h
-        components/RenderComponent.h
         components/WeaponComponent.h
         components/AiComponents.h
         components/StatusComponents.h
-        components/Animation.h
         components/BorderComponent.h
         components/ReplicationId.h
         networking/Serialization.h
@@ -22,10 +20,6 @@ set(OCTOCUS_SOURCES
         networking/Replication.cpp
         systems/DamageSystem.cpp
         systems/DamageSystem.h
-        systems/InputSystem.h
-        systems/InputSystem.cpp
-        systems/DrawSystem.h
-        systems/DrawSystem.cpp
         systems/MovementSystem.h
         systems/MovementSystem.cpp
         systems/AttackSystem.h
@@ -34,10 +28,19 @@ set(OCTOCUS_SOURCES
         systems/CollisionSystem.cpp
         systems/KillSystem.h
         systems/KillSystem.cpp
-        systems/AnimationSystem.h
-        systems/AnimationSystem.cpp
         systems/AiSystem.h
         systems/AiSystem.cpp
         game.h game.cpp
         WaveSpawner.h WaveSpawner.cpp
+)
+
+set(OCTOCUS_CLIENT
+        components/RenderComponent.h
+        components/Animation.h
+        systems/AnimationSystem.h
+        systems/AnimationSystem.cpp
+        systems/InputSystem.h
+        systems/InputSystem.cpp
+        systems/DrawSystem.h
+        systems/DrawSystem.cpp
 )

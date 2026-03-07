@@ -6,17 +6,19 @@
 #include "BorderComponent.h"
 #include "CollisionSystem.h"
 #include "DamageSystem.h"
-#include "DrawSystem.h"
-#include "InputSystem.h"
 #include "KillSystem.h"
 #include "LifeComponents.h"
 #include "MovementSystem.h"
-#include "RenderComponent.h"
 #include "SpaceComponents.h"
 #include "StatusComponents.h"
 #include "WeaponComponent.h"
 #include "networking/Serialization.h"
+#if OCT_CLIENT
+#include "DrawSystem.h"
+#include "InputSystem.h"
+#include "RenderComponent.h"
 #include "raylib.h"
+#endif
 
 Game::Game()
     : m_Spawner(this, m_ScreenHeight, m_ScreenWidth)
@@ -26,9 +28,11 @@ Game::Game()
 
 void Game::init()
 {
+#if OCT_CLIENT
     InitWindow(m_ScreenWidth, m_ScreenHeight, "Octocus");
 
     SetTargetFPS(120);
+#endif
 
     spawnBorders();
 
@@ -67,6 +71,7 @@ void Game::run()
     }
     // ~End testcase
 
+#if OCT_CLIENT
     while (!WindowShouldClose())
     {
         const auto current = sc::steady_clock::now();
@@ -76,6 +81,7 @@ void Game::run()
 
         begin = current;
     }
+#endif
 
     tearDown();
 }
@@ -88,7 +94,9 @@ void Game::update(const float delta)
 
 void Game::tearDown()
 {
+#if OCT_CLIENT
     CloseWindow();
+#endif
 }
 
 void Game::spawnMelee(const SpawnParam& param)
@@ -98,11 +106,13 @@ void Game::spawnMelee(const SpawnParam& param)
     m_Registry.emplace<Position>(entity, param.posx, param.posy);
     m_Registry.emplace<Velocity>(entity, 0.f, 0.f);
     m_Registry.emplace<SphereCollision>(entity, param.size, CollisionChannel::BOT);
-    m_Registry.emplace<RenderComponent>(entity, PURPLE, param.size, RenderPriority::MIDLE);
     m_Registry.emplace<WeaponComponent>(entity, param.damage, 10.f, 1.f);
     m_Registry.emplace<Damage>(entity);
     m_Registry.emplace<Bot>(entity);
     m_Registry.emplace<MeleeAi>(entity);
+#if OCT_CLIENT
+    m_Registry.emplace<RenderComponent>(entity, PURPLE, param.size, RenderPriority::MIDLE);
+#endif
     m_Status.enemies_left++;
 }
 
@@ -113,11 +123,13 @@ void Game::spawnRange(const SpawnParam& param)
     m_Registry.emplace<Position>(entity, param.posx, param.posy);
     m_Registry.emplace<Velocity>(entity, 0.f, 0.f);
     m_Registry.emplace<SphereCollision>(entity, param.size, CollisionChannel::BOT);
-    m_Registry.emplace<RenderComponent>(entity, BLUE, param.size, RenderPriority::MIDLE);
     m_Registry.emplace<ShootComponent>(entity, param.damage, 1.4f);
     m_Registry.emplace<Damage>(entity);
     m_Registry.emplace<Bot>(entity);
     m_Registry.emplace<RangeAi>(entity);
+#if OCT_CLIENT
+    m_Registry.emplace<RenderComponent>(entity, BLUE, param.size, RenderPriority::MIDLE);
+#endif
     m_Status.enemies_left++;
 }
 
@@ -142,7 +154,9 @@ void Game::updateGameplay(const float delta)
 
     if (!m_Status.is_player_dead)
     {
+#if OCT_CLIENT
         InputSystem::update(m_Registry, delta);
+#endif
         AiSystem::updateAi(m_Registry, delta);
         MovementSystem::update(m_Registry, delta);
         CollisionSystem::update(m_Registry);
@@ -154,6 +168,7 @@ void Game::updateGameplay(const float delta)
 
 void Game::updateDrawFrame(const float delta)
 {
+#if OCT_CLIENT
     BeginDrawing();
 
     ClearBackground(RAYWHITE);
@@ -161,13 +176,13 @@ void Game::updateDrawFrame(const float delta)
     DrawSystem::update(m_Registry, delta, m_Status);
 
     EndDrawing();
+#endif
 }
 
 void Game::createPlayer()
 {
     const auto entity = m_Registry.create();
     m_Registry.emplace<Player>(entity); // similar like tag, alternative
-    m_Registry.emplace<RenderComponent>(entity, ORANGE, 10.f);
     m_Registry.emplace<Health>(entity, 100, 100);
     m_Registry.emplace<Position>(entity, 20.f, 20.f);
     m_Registry.emplace<Velocity>(entity, 0.f, 0.f);
@@ -177,26 +192,33 @@ void Game::createPlayer()
     m_Registry.emplace<CollisionResolver>(entity);
     m_Registry.emplace<Damage>(entity);
     m_Registry.emplace<CameraTarget>(entity);
+
+#if OCT_CLIENT
+    m_Registry.emplace<RenderComponent>(entity, ORANGE, 10.f);
+#endif
 }
 
 void Game::spawnBorders()
 {
+    const Color brown{127, 106, 79, 255};
     const auto left = m_Registry.create();
-    m_Registry.emplace<Border>(
-            left, Vector2{0.f - 1000.f, 0.f - (2 * m_ScreenHeight)}, Vector2{0.f, 0.f + (2 * m_ScreenHeight)}, BROWN);
+    m_Registry.emplace<Border>(left,
+                               Vector2{0.f - 1000.f, 0.f - (2 * m_ScreenHeight)},
+                               Vector2{0.f, 0.f + (2 * m_ScreenHeight)},
+                               brown); // brown
 
     const auto right = m_Registry.create();
     m_Registry.emplace<Border>(right,
                                Vector2{m_ScreenWidth, m_ScreenHeight + 1000.f},
                                Vector2{m_ScreenWidth + 1000.f, 0.f - 1000.f},
-                               BROWN);
+                               brown);
 
     const auto top = m_Registry.create();
-    m_Registry.emplace<Border>(top, Vector2{0.f, 0.f}, Vector2{m_ScreenWidth, -m_ScreenHeight}, BROWN);
+    m_Registry.emplace<Border>(top, Vector2{0.f, 0.f}, Vector2{m_ScreenWidth, -m_ScreenHeight}, brown);
 
     const auto bottom = m_Registry.create();
     m_Registry.emplace<Border>(
-            bottom, Vector2{0.f, 0.f + (2 * m_ScreenHeight)}, Vector2{m_ScreenWidth, m_ScreenHeight}, BROWN);
+            bottom, Vector2{0.f, 0.f + (2 * m_ScreenHeight)}, Vector2{m_ScreenWidth, m_ScreenHeight}, brown);
 
     Rectangle rect{};
     rect.x = 0.f;

@@ -25,9 +25,10 @@ include_directories(systems)
 
 include("target_files.cmake")
 
-add_executable(octocus ${OCTOCUS_SOURCES})
-
+add_executable(octocus ${OCTOCUS_SOURCES} ${OCTOCUS_CLIENT})
 target_link_libraries(octocus raylib EnTT::EnTT GameNetworkingSockets::shared)
+target_compile_definitions(octocus PRIVATE OCT_CLIENT=1)
 
 add_executable(octocus_server ${OCTOCUS_SOURCES})
 target_link_libraries(octocus_server EnTT::EnTT GameNetworkingSockets::shared)
+target_compile_definitions(octocus_server PRIVATE OCT_SERVER=1)

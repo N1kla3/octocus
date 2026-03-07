@@ -3,8 +3,11 @@
 #include "AiComponents.h"
 #include "SpaceComponents.h"
 #include "WeaponComponent.h"
+#if OCT_CLIENT
 #include "raylib.h"
 #include "raymath.h"
+#endif
+
 
 void AiSystem::updateAi(entt::registry& registry, float delta)
 {
@@ -36,7 +39,9 @@ void AiSystem::updateAi(entt::registry& registry, float delta)
                     {
                         if (range.curr_strafe_duration > range.strafe_duration)
                         {
-                            int const value = GetRandomValue(1, 2);
+                            // TODO
+                            // int const value = GetRandomValue(1, 2);
+                            const int value = 1;
                             range.strafe_angle = value == 1 ? 90 : -90;
                             range.curr_strafe_duration = 0;
                         }

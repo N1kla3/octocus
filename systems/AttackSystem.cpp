@@ -1,10 +1,13 @@
 #include "AttackSystem.h"
 #include "LifeComponents.h"
+#if OCT_CLIENT
 #include "RenderComponent.h"
+#include "raymath.h"
+#endif
 #include "SpaceComponents.h"
 #include "WeaponComponent.h"
 #include "entt/entity/fwd.hpp"
-#include "raymath.h"
+
 
 void AttackSystem::update(entt::registry& registry, float deltaTime)
 {
@@ -21,7 +24,9 @@ void AttackSystem::update(entt::registry& registry, float deltaTime)
                     weapon.cooldown = 0.f;
                     const auto entity = registry.create();
                     registry.emplace<Position>(entity, pos);
+#if OCT_CLIENT
                     registry.emplace<RenderComponent>(entity, RED, weapon.range, RenderPriority::LOW);
+#endif
                     registry.emplace<SphereCollision>(entity, weapon.range, CollisionChannel::WEAPON, channel);
                     registry.emplace<CollisionResolver>(entity);
                     registry.emplace<DamageHitComponent>(entity, weapon.damage, true);
@@ -44,7 +49,9 @@ void AttackSystem::update(entt::registry& registry, float deltaTime)
                     const auto entity = registry.create();
                     registry.emplace<Position>(entity, pos);
                     registry.emplace<Velocity>(entity, Vector2Scale(direction, 180.f));
+#if OCT_CLIENT
                     registry.emplace<RenderComponent>(entity, GREEN, 3.f, RenderPriority::LOW);
+#endif
                     registry.emplace<SphereCollision>(entity, 3.f, CollisionChannel::WEAPON, channel);
                     registry.emplace<CollisionResolver>(entity);
                     registry.emplace<DamageHitComponent>(entity, shooter.damage);

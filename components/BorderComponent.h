@@ -1,7 +1,7 @@
 #pragma once
 #include <algorithm>
 #include <cstdlib>
-#include "raylib.h"
+#include "SpaceComponents.h"
 
 struct Border
 {
