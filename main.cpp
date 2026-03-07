@@ -1,6 +1,14 @@
 #include "game.h"
 #include "networking/Server.h"
 
+#ifndef OCT_SERVER
+#define OCT_SERVER 0
+#endif
+
+#ifndef OCT_CLIENT
+#define OCT_CLIENT 0
+#endif
+
 void StartServer()
 {
     // Begin server test

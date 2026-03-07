@@ -45,12 +45,11 @@ void Game::run()
     std::unique_ptr<ReplicationBuffer> sec_buffer = std::make_unique<ReplicationBuffer>(1000);
     WriteStream write_stream(sec_buffer.get());
 
-    int var = 32;
-    write_stream.serialize(var);
+    int var = 5;
 
     std::vector<float> floats{3.43f, 5.88f, 6.12f};
-    write_stream.serialize(floats);
     write_stream.serialize(var);
+    write_stream.serialize(floats);
 
     sec_buffer->resetHead();
 
