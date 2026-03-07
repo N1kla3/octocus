@@ -14,6 +14,10 @@ set(OCTOCUS_SOURCES
         networking/ByteSwapper.h
         networking/Server.h
         networking/Server.cpp
+        networking/GameServer.h
+        networking/GameServer.cpp
+        networking/GameClient.h
+        networking/GameClient.cpp
         networking/Replication.h
         networking/Replication.cpp
         systems/DamageSystem.cpp
