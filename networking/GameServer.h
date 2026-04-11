@@ -6,19 +6,40 @@
 
 namespace oct
 {
-    struct Connection
+    class Connection
     {
-        HSteamNetConnection connection;
-
     public:
-        void handleDisconnect() {};
-        void handleConnect() {};
+        enum class ConnectionStatus : uint8
+        {
+            Connecting,
+            Connected,
+            PendingDisconnection,
+            Disconnected,
+            Invalid
+        };
+
+        Connection() = default;
+        void handleDisconnect();
+        void handleConnect();
+
+        void setStatus(ConnectionStatus status);
+        ConnectionStatus getStatus() const noexcept;
+        HSteamNetConnection getSteamConnection() const noexcept;
+
+    private:
+        HSteamNetConnection m_Connection = 0;
+        ConnectionStatus m_Status = ConnectionStatus::Invalid;
     };
 
     class GameServer
     {
     public:
         explicit GameServer(uint16 InPort);
+
+        void update();
+        void cleanupConnection(const Connection& connection);
+        void setupConnection();
+        void closeConnection();
 
         void onSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* inInfo);
         static void steamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* pInfo);

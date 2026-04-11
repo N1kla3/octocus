@@ -18,6 +18,8 @@ set(OCTOCUS_SOURCES
         networking/GameClient.cpp
         networking/Replication.h
         networking/Replication.cpp
+        networking/PlayerRegistry.h
+        networking/PlayerRegistry.cpp
         systems/DamageSystem.cpp
         systems/DamageSystem.h
         systems/MovementSystem.h
