@@ -26,6 +26,22 @@ HSteamNetConnection oct::Connection::getSteamConnection() const noexcept
     return m_Connection;
 }
 
+bool oct::ConnectionHandle::isValid() const noexcept
+{
+    return !m_Connection.expired();
+}
+
+void oct::ConnectionHandle::reset()
+{
+    m_Connection.reset();
+}
+
+oct::ConnectionHandle::ConnectionHandle(const std::shared_ptr<Connection>& inConn)
+{
+    m_Connection = inConn;
+}
+
+
 oct::GameServer::GameServer(uint16 InPort)
 {
     m_Interface = SteamNetworkingSockets();
@@ -50,6 +66,28 @@ oct::GameServer::GameServer(uint16 InPort)
     printf("Server listening on port %d\n", InPort);
 }
 
+void oct::GameServer::update(float delta)
+{
+    for (auto conn: m_Connections)
+    {
+    }
+}
+
+void oct::GameServer::cleanupConnection(const ConnectionHandle& handle)
+{
+    // remove player and connnection
+}
+
+void oct::GameServer::setupConnection(const ConnectionHandle& handle)
+{
+    // create player send handshakes
+}
+
+void oct::GameServer::closeConnection(const ConnectionHandle& handle)
+{
+    // force close connection
+}
+
 void oct::GameServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* inInfo)
 {
     char temp[1024];
@@ -71,7 +109,7 @@ void oct::GameServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatus
                 auto iter = m_Connections.begin();
                 for (; iter != m_Connections.end(); iter++)
                 {
-                    if (iter->getSteamConnection() == inInfo->m_hConn)
+                    if ((*iter)->getSteamConnection() == inInfo->m_hConn)
                     {
                         break;
                     }
@@ -94,7 +132,7 @@ void oct::GameServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatus
                        inInfo->m_info.m_eEndReason,
                        inInfo->m_info.m_szEndDebug);
 
-                iter->handleDisconnect();
+                (*iter)->handleDisconnect();
                 m_Connections.erase(iter);
             }
             else
@@ -117,7 +155,7 @@ void oct::GameServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatus
             // This must be a new connection
             for (auto& conn: m_Connections)
             {
-                assert(conn.getSteamConnection() != inInfo->m_hConn);
+                assert(conn->getSteamConnection() != inInfo->m_hConn);
             }
 
             printf("Connection request from %s", inInfo->m_info.m_szConnectionDescription);
@@ -142,9 +180,9 @@ void oct::GameServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatus
                 break;
             }
 
-            Connection conn{};
-            m_Connections.push_back(conn);
-            m_Connections.back().handleConnect();
+            auto conn = std::make_shared<Connection>();
+            m_Connections.push_back(std::move(conn));
+            m_Connections.back()->handleConnect();
             break;
         }
 

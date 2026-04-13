@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <steam/isteamnetworkingsockets.h>
 #include <steam/steamnetworkingtypes.h>
 #include <vector>
@@ -12,6 +13,7 @@ namespace oct
         enum class ConnectionStatus : uint8
         {
             Connecting,
+            Handshaking,
             Connected,
             PendingDisconnection,
             Disconnected,
@@ -31,15 +33,33 @@ namespace oct
         ConnectionStatus m_Status = ConnectionStatus::Invalid;
     };
 
+    class ConnectionHandle
+    {
+    public:
+        bool isValid() const noexcept;
+        void reset();
+
+        ConnectionHandle() = default;
+        ConnectionHandle(const ConnectionHandle& handle) = default;
+        ConnectionHandle& operator=(const ConnectionHandle& handle) = default;
+        ConnectionHandle(ConnectionHandle&& handle) = delete;
+        ConnectionHandle& operator=(ConnectionHandle&& handle) = delete;
+
+        explicit ConnectionHandle(const std::shared_ptr<Connection>& inConn);
+
+    private:
+        std::weak_ptr<Connection> m_Connection;
+    };
+
     class GameServer
     {
     public:
         explicit GameServer(uint16 InPort);
 
-        void update();
-        void cleanupConnection(const Connection& connection);
-        void setupConnection();
-        void closeConnection();
+        void update(float delta);
+        void cleanupConnection(const ConnectionHandle& handle);
+        void setupConnection(const ConnectionHandle& handle);
+        void closeConnection(const ConnectionHandle& handle);
 
         void onSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* inInfo);
         static void steamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* pInfo);
@@ -50,7 +70,7 @@ namespace oct
         HSteamNetPollGroup m_PollGroup;
         ISteamNetworkingSockets* m_Interface;
 
-        std::vector<Connection> m_Connections;
+        std::vector<std::shared_ptr<Connection>> m_Connections;
 
 
         inline static GameServer* s_pCallbackInstance = nullptr;
