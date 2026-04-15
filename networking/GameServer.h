@@ -4,6 +4,8 @@
 #include <steam/isteamnetworkingsockets.h>
 #include <steam/steamnetworkingtypes.h>
 #include <vector>
+#include "PlayerRegistry.h"
+#include "Serialization.h"
 
 namespace oct
 {
@@ -20,7 +22,8 @@ namespace oct
             Invalid
         };
 
-        Connection() = default;
+        Connection()
+            : m_Buffer(128) {};
         void handleDisconnect();
         void handleConnect();
 
@@ -29,6 +32,7 @@ namespace oct
         HSteamNetConnection getSteamConnection() const noexcept;
 
     private:
+        ReplicationBuffer m_Buffer;
         HSteamNetConnection m_Connection = 0;
         ConnectionStatus m_Status = ConnectionStatus::Invalid;
     };
@@ -58,7 +62,7 @@ namespace oct
 
         void update(float delta);
         void cleanupConnection(const ConnectionHandle& handle);
-        void setupConnection(const ConnectionHandle& handle);
+        void handleNewConnection(HSteamNetConnection conn);
         void closeConnection(const ConnectionHandle& handle);
 
         void onSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* inInfo);
@@ -71,6 +75,7 @@ namespace oct
         ISteamNetworkingSockets* m_Interface;
 
         std::vector<std::shared_ptr<Connection>> m_Connections;
+        PlayerRegistry m_PlayerRegistry;
 
 
         inline static GameServer* s_pCallbackInstance = nullptr;

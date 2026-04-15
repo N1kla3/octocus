@@ -4,6 +4,7 @@
 #include <steam/isteamnetworkingsockets.h>
 #include <steam/isteamnetworkingutils.h>
 #include <steam/steamnetworkingsockets.h>
+#include "PlayerRegistry.h"
 
 
 void oct::Connection::handleDisconnect() {}
@@ -78,8 +79,9 @@ void oct::GameServer::cleanupConnection(const ConnectionHandle& handle)
     // remove player and connnection
 }
 
-void oct::GameServer::setupConnection(const ConnectionHandle& handle)
+void oct::GameServer::handleNewConnection(HSteamNetConnection conn)
 {
+    NewPlayerInfo info{};
     // create player send handshakes
 }
 
