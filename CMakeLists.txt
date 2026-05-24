@@ -22,13 +22,14 @@ find_package(GameNetworkingSockets CONFIG REQUIRED)
 
 include_directories(components)
 include_directories(systems)
+include_directories(math)
 
 include("target_files.cmake")
 
-add_executable(octocus ${OCTOCUS_SOURCES} ${OCTOCUS_CLIENT})
+add_executable(octocus ${OCTOCUS_SOURCES} ${OCTOCUS_CLIENT} math/octrender.h)
 target_link_libraries(octocus raylib EnTT::EnTT GameNetworkingSockets::shared)
-target_compile_definitions(octocus PRIVATE OCT_CLIENT=1)
+target_compile_definitions(octocus PRIVATE OCT_CLIENT=1 OCT_RENDER=1)
 
 add_executable(octocus_server ${OCTOCUS_SOURCES})
 target_link_libraries(octocus_server EnTT::EnTT GameNetworkingSockets::shared)
-target_compile_definitions(octocus_server PRIVATE OCT_SERVER=1)
+target_compile_definitions(octocus_server PRIVATE OCT_SERVER=1 OCT_RENDER=0)

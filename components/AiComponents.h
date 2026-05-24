@@ -1,9 +1,9 @@
 #pragma once
-#include "SpaceComponents.h"
+#include "../math/octmath.h"
 
 struct RangeAi
 {
-    Vector2 target{0.f, 0.f};
+    oct::Vector2 target{0.f, 0.f};
     float speed = 35.f;
     float safe_distance = 99.f;
     float shoot_distance = 200.f;
@@ -15,7 +15,7 @@ struct RangeAi
 
 struct MeleeAi
 {
-    Vector2 target{0.f, 0.f};
+    oct::Vector2 target{0.f, 0.f};
     float speed = 45.f;
     float attack_distance = 30.f;
     float haste_distance = 110.f;

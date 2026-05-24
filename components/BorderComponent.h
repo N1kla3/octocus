@@ -1,18 +1,16 @@
 #pragma once
 #include <algorithm>
 #include <cstdlib>
-#include "SpaceComponents.h"
+#include "../math/octmath.h"
 
 struct Border
 {
-    Vector2 left_down_bound;
-    Vector2 right_upper_bound;
+    oct::Vector2 left_down_bound;
+    oct::Vector2 right_upper_bound;
 
-    Color color;
-
-    [[nodiscard]] Rectangle getRect() const
+    [[nodiscard]] oct::Rectangle getRect() const
     {
-        Rectangle rect;
+        oct::Rectangle rect;
         rect.x = std::min(left_down_bound.x, right_upper_bound.x);
         rect.y = std::min(left_down_bound.y, right_upper_bound.y);
         rect.width = std::abs(left_down_bound.x - right_upper_bound.x);
@@ -23,5 +21,12 @@ struct Border
 
 struct BorderCollision
 {
-    Rectangle rect;
+    oct::Rectangle rect;
 };
+
+#if OCT_RENDER
+struct BorderRender
+{
+    Color color;
+}
+#endif
