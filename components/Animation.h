@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "raylib.h"
+#include "octrender.h"
 
 struct TextAnimation
 {

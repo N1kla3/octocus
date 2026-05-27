@@ -34,9 +34,9 @@ set(OCTOCUS_SOURCES
         systems/AiSystem.cpp
         game.h game.cpp
         WaveSpawner.h WaveSpawner.cpp
-        math/octcollision.h
-        math/octmath.h
-        math/octrender.h
+        octmath/octcollision.h
+        octmath/octmath.h
+        octmath/octrender.h
 )
 
 set(OCTOCUS_CLIENT

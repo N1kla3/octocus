@@ -1,6 +1,6 @@
 #pragma once
 #include <cstdint>
-#include "raylib.h"
+#include "octrender.h"
 
 enum class RenderPriority : uint8_t
 {

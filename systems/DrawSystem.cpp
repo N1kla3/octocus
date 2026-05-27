@@ -5,7 +5,7 @@
 #include "LifeComponents.h"
 #include "RenderComponent.h"
 #include "SpaceComponents.h"
-#include "raylib.h"
+#include "octrender.h"
 
 void DrawSystem::update(entt::registry& registry, const float delta, const GameStatus status)
 {
@@ -17,7 +17,7 @@ void DrawSystem::update(entt::registry& registry, const float delta, const GameS
     {
         Camera2D camera{};
         camera.target = {pos.x - half_width, pos.y - half_height};
-        camera.offset = target.offset;
+        camera.offset = {target.offset.x, target.offset.y};
         camera.zoom = target.zoom;
         camera.rotation = target.rotation;
         BeginMode2D(camera);
@@ -28,10 +28,10 @@ void DrawSystem::update(entt::registry& registry, const float delta, const GameS
     view.each([](const Position pos, const RenderComponent renderData)
               { DrawCircleV(Vector2{pos.x, pos.y}, renderData.radius, renderData.color); });
 
-    const auto border_view = registry.view<Border>();
-    for (const auto& [ent, border]: border_view.each())
+    const auto border_view = registry.view<BorderRender, Border>();
+    for (const auto& [ent, border_rend, border]: border_view.each())
     {
-        DrawRectangleRec(border.getRect(), border.color);
+        DrawRectangleRec(border.getRectRender(), border_rend.color);
     }
 
     EndMode2D();

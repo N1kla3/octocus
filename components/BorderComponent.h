@@ -1,7 +1,8 @@
 #pragma once
 #include <algorithm>
 #include <cstdlib>
-#include "../math/octmath.h"
+#include "octmath.h"
+#include "octrender.h"
 
 struct Border
 {
@@ -17,6 +18,19 @@ struct Border
         rect.height = std::abs(left_down_bound.y - right_upper_bound.y);
         return rect;
     }
+
+
+#if OCT_RENDER
+    [[nodiscard]] Rectangle getRectRender() const
+    {
+        Rectangle rect;
+        rect.x = std::min(left_down_bound.x, right_upper_bound.x);
+        rect.y = std::min(left_down_bound.y, right_upper_bound.y);
+        rect.width = std::abs(left_down_bound.x - right_upper_bound.x);
+        rect.height = std::abs(left_down_bound.y - right_upper_bound.y);
+        return rect;
+    }
+#endif
 };
 
 struct BorderCollision
@@ -28,5 +42,5 @@ struct BorderCollision
 struct BorderRender
 {
     Color color;
-}
+};
 #endif

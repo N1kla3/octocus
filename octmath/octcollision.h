@@ -38,4 +38,19 @@ namespace oct
 
         return collision;
     }
+
+    inline bool checkCollisionCircles(Vector2 center1, float radius1, Vector2 center2, float radius2)
+    {
+        bool collision = false;
+
+        float dx = center2.x - center1.x; // X distance between centers
+        float dy = center2.y - center1.y; // Y distance between centers
+
+        float distance_squared = (dx * dx) + (dy * dy); // Distance between centers squared
+        float radius_sum = radius1 + radius2;
+
+        collision = (distance_squared <= (radius_sum * radius_sum));
+
+        return collision;
+    }
 } // namespace oct

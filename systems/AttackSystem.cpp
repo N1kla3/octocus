@@ -2,7 +2,7 @@
 #include "LifeComponents.h"
 #if OCT_CLIENT
 #include "RenderComponent.h"
-#include "raymath.h"
+#include "octrender.h"
 #endif
 #include "SpaceComponents.h"
 #include "WeaponComponent.h"
@@ -44,8 +44,8 @@ void AttackSystem::update(entt::registry& registry, float deltaTime)
                 if (shooter.attack && shooter.current_cooldown > shooter.cooldown)
                 {
                     shooter.current_cooldown = 0.f;
-                    Vector2 direction = {shooter.target_x, shooter.target_y};
-                    direction = Vector2Normalize(direction);
+                    oct::Vector2 direction = {shooter.target_x, shooter.target_y};
+                    direction.normalizeInline();
                     const auto entity = registry.create();
                     registry.emplace<Position>(entity, pos);
                     registry.emplace<Velocity>(entity, Vector2Scale(direction, 180.f));

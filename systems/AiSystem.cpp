@@ -1,18 +1,16 @@
 #include "AiSystem.h"
-#include "../game.h"
 #include "AiComponents.h"
 #include "SpaceComponents.h"
 #include "WeaponComponent.h"
 #if OCT_CLIENT
-#include "raylib.h"
-#include "raymath.h"
+#include "octrender.h"
 #endif
 
 
 void AiSystem::updateAi(entt::registry& registry, float delta)
 {
     const auto player_v = registry.view<Position, Player>();
-    Vector2 player_pos;
+    oct::Vector2 player_pos;
     player_v.each(
             [&player_pos](Position pos, Player)
             {
@@ -24,16 +22,18 @@ void AiSystem::updateAi(entt::registry& registry, float delta)
     range_v.each(
             [delta, player_pos](RangeAi& range, Bot, const Position& pos, ShootComponent& shoot, Velocity& vel)
             {
-                Vector2 const my_pos = pos.toVector2();
-                float const distance = Vector2Distance(my_pos, player_pos);
+                oct::Vector2 const my_pos = pos.toVector2();
+                float const distance = my_pos.distance(player_pos);
 
                 shoot.attack = false;
                 if (distance < range.shoot_distance)
                 {
                     if (distance < range.safe_distance)
                     {
-                        Vector2 const direction = Vector2Normalize(Vector2Subtract(my_pos, player_pos));
-                        vel = Velocity(Vector2Scale(direction, range.speed));
+                        oct::Vector2 direction = (my_pos - player_pos);
+                        direction.normalizeInline();
+                        direction.scale(range.speed);
+                        vel = Velocity(direction);
                     }
                     else
                     {
@@ -47,9 +47,11 @@ void AiSystem::updateAi(entt::registry& registry, float delta)
                         }
                         else
                         {
-                            Vector2 direction = Vector2Normalize(Vector2Subtract(player_pos, my_pos));
-                            direction = Vector2Rotate(direction, range.strafe_angle);
-                            vel = Velocity(Vector2Scale(direction, range.speed));
+                            oct::Vector2 direction = (player_pos - my_pos);
+                            direction.normalizeInline();
+                            direction.rotate(range.strafe_angle);
+                            direction.scale(range.speed);
+                            vel = Velocity(direction);
                             range.curr_strafe_duration += delta;
                         }
                     }
@@ -60,8 +62,10 @@ void AiSystem::updateAi(entt::registry& registry, float delta)
 
                 else
                 {
-                    Vector2 const direction = Vector2Normalize(Vector2Subtract(player_pos, my_pos));
-                    vel = Velocity(Vector2Scale(direction, range.speed));
+                    oct::Vector2 direction = (player_pos - my_pos);
+                    direction.normalizeInline();
+                    direction.scale(range.speed);
+                    vel = Velocity(direction);
                 }
             });
 
@@ -69,10 +73,10 @@ void AiSystem::updateAi(entt::registry& registry, float delta)
     melee_v.each(
             [player_pos](const MeleeAi& mel, Bot, const Position& pos, WeaponComponent& weap, Velocity& vel)
             {
-                Vector2 const my_pos = pos.toVector2();
+                oct::Vector2 const my_pos = pos.toVector2();
                 float const distance = Vector2Distance(my_pos, player_pos);
 
-                Vector2 const direction = Vector2Normalize(Vector2Subtract(player_pos, my_pos));
+                oct::Vector2 const direction = Vector2Normalize(Vector2Subtract(player_pos, my_pos));
 
                 weap.attack = distance < mel.attack_distance;
 

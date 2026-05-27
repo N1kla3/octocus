@@ -1,5 +1,5 @@
 #pragma once
-#include "../math/octmath.h"
+#include "octmath.h"
 
 struct RangeAi
 {

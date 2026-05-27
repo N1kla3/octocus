@@ -3,8 +3,8 @@
 #include "../game.h"
 #include "SpaceComponents.h"
 #include "WeaponComponent.h"
-#include "raylib.h"
-#include "raymath.h"
+#include "octmath.h"
+#include "octrender.h"
 
 void InputSystem::update(entt::registry& registry, float /*delta*/)
 {
@@ -57,8 +57,9 @@ void InputSystem::update(entt::registry& registry, float /*delta*/)
             [mousex, mousey, request_attack](
                     WeaponComponent& weap, ShootComponent& shoot, Position /*pos*/, Player /*pl*/)
             {
-                Vector2 const res = Vector2Normalize({mousex - (static_cast<float>(Game::m_ScreenWidth) / 2),
-                                                      mousey - (static_cast<float>(Game::m_ScreenHeight) / 2)});
+                oct::Vector2 const res = oct::Vector2(mousex - (static_cast<float>(Game::m_ScreenWidth) / 2),
+                                                      mousey - (static_cast<float>(Game::m_ScreenHeight) / 2))
+                                                 .normalize();
                 shoot.target_x = res.x;
                 shoot.target_y = res.y;
                 shoot.attack = true;

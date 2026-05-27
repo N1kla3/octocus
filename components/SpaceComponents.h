@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
-#include "../math/octmath.h"
 #include "entt/entt.hpp"
+#include "octmath.h"
 
 
 enum class CollisionChannel : uint8_t

@@ -1,6 +1,6 @@
 #include "AnimationSystem.h"
 #include "Animation.h"
-#include "raylib.h"
+#include "octmath.h"
 
 void AnimationSystem::updateAnimation(entt::registry& registry, float deltaTime)
 {
