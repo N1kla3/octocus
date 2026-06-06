@@ -74,19 +74,20 @@ void AiSystem::updateAi(entt::registry& registry, float delta)
             [player_pos](const MeleeAi& mel, Bot, const Position& pos, WeaponComponent& weap, Velocity& vel)
             {
                 oct::Vector2 const my_pos = pos.toVector2();
-                float const distance = Vector2Distance(my_pos, player_pos);
+                float const distance = my_pos.distance(player_pos);
 
-                oct::Vector2 const direction = Vector2Normalize(Vector2Subtract(player_pos, my_pos));
+                oct::Vector2 direction = (player_pos - my_pos).normalize();
 
                 weap.attack = distance < mel.attack_distance;
 
                 if (distance < mel.haste_distance)
                 {
-                    vel = Velocity(Vector2Scale(direction, mel.speed + 20.f));
+                    direction.scale(mel.speed + 20.f);
                 }
                 else
                 {
-                    vel = Velocity(Vector2Scale(direction, mel.speed));
+                    direction.scale(mel.speed);
                 }
+                vel = Velocity(direction);
             });
 }

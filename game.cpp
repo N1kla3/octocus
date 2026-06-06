@@ -200,29 +200,34 @@ void Game::createPlayer()
 
 void Game::spawnBorders()
 {
-    const Color brown{127, 106, 79, 255};
     const auto left = m_Registry.create();
     m_Registry.emplace<Border>(left,
-                               Vector2{0.f - 1000.f, 0.f - (2 * m_ScreenHeight)},
-                               Vector2{0.f, 0.f + (2 * m_ScreenHeight)},
-                               brown); // brown
+                               oct::Vector2{0.f - 1000.f, 0.f - (2 * m_ScreenHeight)},
+                               oct::Vector2{0.f, 0.f + (2 * m_ScreenHeight)}); // brown
 
     const auto right = m_Registry.create();
     m_Registry.emplace<Border>(right,
-                               Vector2{m_ScreenWidth, m_ScreenHeight + 1000.f},
-                               Vector2{m_ScreenWidth + 1000.f, 0.f - 1000.f},
-                               brown);
+                               oct::Vector2{m_ScreenWidth, m_ScreenHeight + 1000.f},
+                               oct::Vector2{m_ScreenWidth + 1000.f, 0.f - 1000.f});
 
     const auto top = m_Registry.create();
-    m_Registry.emplace<Border>(top, Vector2{0.f, 0.f}, Vector2{m_ScreenWidth, -m_ScreenHeight}, brown);
+    m_Registry.emplace<Border>(top, oct::Vector2{0.f, 0.f}, oct::Vector2{m_ScreenWidth, -m_ScreenHeight});
 
     const auto bottom = m_Registry.create();
     m_Registry.emplace<Border>(
-            bottom, Vector2{0.f, 0.f + (2 * m_ScreenHeight)}, Vector2{m_ScreenWidth, m_ScreenHeight}, brown);
+            bottom, oct::Vector2{0.f, 0.f + (2 * m_ScreenHeight)}, oct::Vector2{m_ScreenWidth, m_ScreenHeight});
 
-    Rectangle rect{};
-    rect.x = 0.f;
-    rect.y = 0.f;
-    rect.width = m_ScreenWidth;
-    rect.height = m_ScreenHeight;
+#if OCT_RENDER
+    const Color brown{127, 106, 79, 255};
+    m_Registry.emplace<BorderRender>(left, brown); // brown
+    m_Registry.emplace<BorderRender>(right, brown);
+    m_Registry.emplace<BorderRender>(top, brown);
+    m_Registry.emplace<BorderRender>(bottom, brown);
+#endif
+
+    // oct::Rectangle rect{};
+    // rect.x = 0.f;
+    // rect.y = 0.f;
+    // rect.width = m_ScreenWidth;
+    // rect.height = m_ScreenHeight;
 }

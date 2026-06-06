@@ -46,9 +46,10 @@ void AttackSystem::update(entt::registry& registry, float deltaTime)
                     shooter.current_cooldown = 0.f;
                     oct::Vector2 direction = {shooter.target_x, shooter.target_y};
                     direction.normalizeInline();
+                    direction.scale(180.f);
                     const auto entity = registry.create();
                     registry.emplace<Position>(entity, pos);
-                    registry.emplace<Velocity>(entity, Vector2Scale(direction, 180.f));
+                    registry.emplace<Velocity>(entity, direction);
 #if OCT_CLIENT
                     registry.emplace<RenderComponent>(entity, GREEN, 3.f, RenderPriority::LOW);
 #endif
